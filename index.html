@@ -12,7 +12,16 @@
             --bg-dark: #050505; --card-bg: rgba(15, 15, 20, 0.95);
         }
         * { box-sizing: border-box; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg-dark); color: var(--topic-white); font-family: 'Rajdhani', sans-serif; margin: 0; overflow: hidden; touch-action: manipulation; display: flex; flex-direction: column; height: 100vh; }
+        body { 
+            background: var(--bg-dark); 
+            color: var(--topic-white); 
+            font-family: 'Rajdhani', sans-serif; 
+            margin: 0; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+        }
         
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1a0000 0%, #000 100%); }
         .auth-card { background: var(--card-bg); padding: 30px; border: 1px solid var(--p1-red); border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 30px rgba(255, 0, 0, 0.2); }
@@ -24,7 +33,7 @@
         .sidebar { background: #0a0a0c; border-right: 1px solid rgba(255,255,255,0.05); padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
         @media (max-width: 767px) { 
             .sidebar { height: auto; border-right: none; border-bottom: 1px solid #333; padding: 15px; }
-            #main-terminal { grid-template-rows: auto 1fr; height: auto; }
+            #main-terminal { grid-template-rows: auto 1fr; }
             .nav-container { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 5px; scrollbar-width: none; }
             .nav-link { min-width: 140px; margin-bottom: 0 !important; font-size: 0.7rem !important; }
         }
@@ -63,7 +72,19 @@
 
         .upload-btn { background: var(--p3-cyan); color: #000; padding: 4px 8px; border-radius: 4px; font-size: 0.6rem; font-family: 'Orbitron'; cursor: pointer; display: none; font-weight: bold; border: none; }
 
-        .footer { background: rgba(0, 0, 0, 0.9); border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 10px; text-align: center; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; letter-spacing: 2px; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; width: 100%; }
+        .footer { 
+            background: rgba(0, 0, 0, 0.9); 
+            border-top: 1px solid rgba(255, 255, 255, 0.05); 
+            padding: 10px; 
+            text-align: center; 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 0.65rem; 
+            letter-spacing: 2px; 
+            color: rgba(255, 255, 255, 0.4); 
+            text-transform: uppercase; 
+            width: 100%; 
+            flex-shrink: 0; 
+        }
         .footer span { color: var(--p3-cyan); text-shadow: 0 0 5px var(--p3-cyan); }
     </style>
 </head>
@@ -94,7 +115,8 @@
     <script>
         const API_URL = "https://sheetdb.io/api/v1/oj0l2zb1m9qnd";
         const DRIVE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwB1dGM26Vsxo9hYoqZPyRJZ_7QY4fPOm4b-qrZKLfMT3QEoDVEmpbySlQMueOyGICqzw/exec";
-        const AGENTS = { "singhtanay": "Tanay Singh", "murmuprem": "Prem Murmu", "rajyash": "Yash Raj" };
+        // Rearranged AGENTS object to follow order: Yash, Tanay, Prem
+        const AGENTS = { "rajyash": "Yash Raj", "singhtanay": "Tanay Singh", "murmuprem": "Prem Murmu" };
         const SYLLABUS = {
             p1: { title: "Paper 1", subName: "BUSINESS LAWS & COMMUNICATION", color: "var(--p1-red)", sections: [
                 { name: "SECTION A: BUSINESS LAWS", chapters: [{ name: "Introduction to Law", topics: ["Sources of Law", "Legislative Process", "Court System"] }, { name: "Indian Contract Act, 1872", topics: ["Offer & Acceptance", "Consideration", "Capacity", "Consent", "Breach"] }, { name: "Sale of Goods Act, 1930", topics: ["Formation", "Ownership", "Unpaid Seller"] }, { name: "Negotiable Instruments", topics: ["Types", "Sec 138"] }]},
