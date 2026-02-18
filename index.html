@@ -57,9 +57,11 @@
         .detail-view { display: none; flex-direction: column; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 8px; margin-top: 10px; }
         
         .ch-card { background: rgba(255,255,255,0.02); border: 1px solid var(--ch-green); margin-bottom: 15px; border-radius: 10px; overflow: hidden; }
-        .ch-head { padding: 12px 15px; background: rgba(57, 255, 20, 0.05); color: var(--ch-green); font-family: 'Orbitron'; font-size: 0.85rem; border-bottom: 1px solid #333; }
+        .ch-head { padding: 12px 15px; background: rgba(57, 255, 20, 0.05); color: var(--ch-green); font-family: 'Orbitron'; font-size: 0.85rem; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
         .topic-row { padding: 10px 15px; display: flex; align-items: center; border-bottom: 1px solid #222; font-size: 0.9rem; }
         input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; accent-color: var(--p3-cyan); flex-shrink: 0; cursor: pointer; }
+
+        .upload-btn { background: var(--p3-cyan); color: #000; padding: 4px 8px; border-radius: 4px; font-size: 0.6rem; font-family: 'Orbitron'; cursor: pointer; display: none; font-weight: bold; border: none; }
 
         .footer { background: rgba(0, 0, 0, 0.9); border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 10px; text-align: center; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; letter-spacing: 2px; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; width: 100%; }
         .footer span { color: var(--p3-cyan); text-shadow: 0 0 5px var(--p3-cyan); }
@@ -91,6 +93,7 @@
 
     <script>
         const API_URL = "https://sheetdb.io/api/v1/ovw2jw6xa21bm";
+        const DRIVE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwB1dGM26Vsxo9hYoqZPyRJZ_7QY4fPOm4b-qrZKLfMT3QEoDVEmpbySlQMueOyGICqzw/exec";
         const AGENTS = { "singhtanay": "Tanay Singh", "murmuprem": "Prem Murmu", "rajyash": "Yash Raj" };
         const SYLLABUS = {
             p1: { title: "Paper 1", subName: "BUSINESS LAWS & COMMUNICATION", color: "var(--p1-red)", sections: [
@@ -123,10 +126,30 @@
             try { const res = await fetch(API_URL); const data = await res.json(); data.forEach(row => { if (row.progress_data && row.progress_data !== "{}") db[row.agent_name] = JSON.parse(row.progress_data); }); } catch (e) {}
         }
 
-        async function toggleTopic(key) {
+        async function toggleTopic(key, paperKey, chName) {
             db[activeAgent][key] = !db[activeAgent][key];
             document.getElementById('overall-prog').innerText = "MISSION: " + getOverall(activeAgent) + "%";
             await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
+            checkArchiveAvailability(paperKey, chName);
+        }
+
+        function checkArchiveAvailability(pk, chName) {
+            const prog = getChProgress(activeAgent, pk, chName);
+            const btn = document.getElementById(`up-${pk}-${chName.replace(/\s/g, '')}`);
+            if (btn) btn.style.display = (prog === 100) ? 'block' : 'none';
+        }
+
+        async function archiveChapter(pk, chName) {
+            const input = document.createElement('input'); input.type = 'file'; input.multiple = true; input.accept = 'image/*';
+            input.onchange = async (e) => {
+                const files = Array.from(e.target.files);
+                const btn = document.getElementById(`up-${pk}-${chName.replace(/\s/g, '')}`);
+                btn.innerText = "ZIPPING..."; btn.style.opacity = "0.5";
+                const fileData = await Promise.all(files.map(file => new Promise(res => { const r = new FileReader(); r.onload = ev => res({ data: ev.target.result.split(',')[1], type: file.type }); r.readAsDataURL(file); })));
+                await fetch(DRIVE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ agent: activeAgent, paper: SYLLABUS[pk].title, chapter: chName, files: fileData }) });
+                btn.innerText = "ARCHIVED"; btn.style.background = "var(--ch-green)";
+            };
+            input.click();
         }
 
         function getChProgress(name, pk, chName) {
@@ -193,8 +216,10 @@
                 data.sections.forEach(sec => {
                     vp.innerHTML += `<div style="background:var(--section-yellow); color:#000; padding:8px 12px; margin:15px 0; font-family:'Orbitron'; border-radius:4px; font-size:0.75rem; font-weight:bold">${sec.name}</div>`;
                     sec.chapters.forEach(ch => {
-                        let h = `<div class="ch-card"><div class="ch-head"><span>${ch.name}</span></div><div class="topic-body">`;
-                        ch.topics.forEach(t => { const k = vid+ch.name+t; const c = db[activeAgent][k]?'checked':''; h += `<div class="topic-row"><input type="checkbox" onchange="toggleTopic('${k}')" ${c} style="accent-color:${data.color}"><span>${t}</span></div>`; });
+                        const safeCh = ch.name.replace(/\s/g, '');
+                        const isDone = getChProgress(activeAgent, vid, ch.name) === 100;
+                        let h = `<div class="ch-card"><div class="ch-head"><span>${ch.name}</span><button class="upload-btn" id="up-${vid}-${safeCh}" onclick="archiveChapter('${vid}','${ch.name}')" style="display:${isDone?'block':'none'}">ARCHIVE NOTES</button></div><div class="topic-body">`;
+                        ch.topics.forEach(t => { const k = vid+ch.name+t; const c = db[activeAgent][k]?'checked':''; h += `<div class="topic-row"><input type="checkbox" onchange="toggleTopic('${k}', '${vid}', '${ch.name}')" ${c} style="accent-color:${data.color}"><span>${t}</span></div>`; });
                         vp.innerHTML += h + `</div></div>`;
                     });
                 });
