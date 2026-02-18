@@ -25,10 +25,13 @@
         
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1a0000 0%, #000 100%); }
         .auth-card { background: var(--card-bg); padding: 30px; border: 1px solid var(--p1-red); border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 30px rgba(255, 0, 0, 0.2); }
-        input[type="password"] { background: transparent; border: none; border-bottom: 2px solid var(--p1-red); color: var(--p1-red); font-family: 'Orbitron'; font-size: 1.2rem; padding: 10px; width: 100%; text-align: center; outline: none; }
+        
+        .pass-input-wrapper { position: relative; display: flex; align-items: center; border-bottom: 2px solid var(--p1-red); margin-top: 20px; }
+        input[type="password"] { background: transparent; border: none; color: var(--p1-red); font-family: 'Orbitron'; font-size: 1.2rem; padding: 10px; width: 100%; text-align: center; outline: none; }
+        .login-arrow { background: none; border: none; color: var(--p1-red); font-size: 1.5rem; cursor: pointer; padding: 0 10px; display: flex; align-items: center; justify-content: center; }
 
-        #main-terminal { display: none; flex: 1; grid-template-columns: 1fr; overflow: hidden; }
-        @media (min-width: 768px) { #main-terminal { grid-template-columns: 280px 1fr; } }
+        #main-terminal { display: none; flex: 1; grid-template-columns: 1fr; overflow: hidden; padding-bottom: 50px; }
+        @media (min-width: 768px) { #main-terminal { grid-template-columns: 280px 1fr; padding-bottom: 0; } }
 
         .sidebar { background: #0a0a0c; border-right: 1px solid rgba(255,255,255,0.05); padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
         @media (max-width: 767px) { 
@@ -50,7 +53,6 @@
         .bar-val { font-family: 'Orbitron'; font-size: 0.7rem; margin-bottom: 5px; color: var(--ch-green); }
         .bar-label { font-family: 'Orbitron'; font-size: 0.6rem; margin-top: 10px; color: #888; text-align: center; }
 
-        /* Scrollable Pie Chart System */
         .pie-scroll-container { display: flex; overflow-x: auto; gap: 20px; padding: 20px 0; scrollbar-width: none; margin-bottom: 30px; border-bottom: 1px solid #222; }
         .pie-card { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; width: 120px; }
         .multi-pie { width: 80px; height: 80px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
@@ -73,9 +75,12 @@
         .upload-btn { background: var(--p3-cyan); color: #000; padding: 4px 8px; border-radius: 4px; font-size: 0.6rem; font-family: 'Orbitron'; cursor: pointer; display: none; font-weight: bold; border: none; }
 
         .footer { 
-            background: rgba(0, 0, 0, 0.9); 
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.95); 
             border-top: 1px solid rgba(255, 255, 255, 0.05); 
-            padding: 10px; 
+            padding: 12px; 
             text-align: center; 
             font-family: 'Orbitron', sans-serif; 
             font-size: 0.65rem; 
@@ -83,13 +88,22 @@
             color: rgba(255, 255, 255, 0.4); 
             text-transform: uppercase; 
             width: 100%; 
-            flex-shrink: 0; 
+            z-index: 2000;
         }
         .footer span { color: var(--p3-cyan); text-shadow: 0 0 5px var(--p3-cyan); }
     </style>
 </head>
 <body>
-    <div id="login-screen"><div class="auth-card"><h1 style="color:var(--p1-red); font-family:'Orbitron'; font-size: 1.2rem;">IDENTITY CHECK</h1><input type="password" id="passCode" placeholder="ACCESS KEY..." onkeydown="if(event.key==='Enter') verify()"></div></div>
+    <div id="login-screen">
+        <div class="auth-card">
+            <h1 style="color:var(--p1-red); font-family:'Orbitron'; font-size: 1.2rem;">IDENTITY CHECK</h1>
+            <div class="pass-input-wrapper">
+                <input type="password" id="passCode" placeholder="ACCESS KEY..." onkeydown="if(event.key==='Enter') verify()">
+                <button class="login-arrow" onclick="verify()">➜</button>
+            </div>
+        </div>
+    </div>
+
     <div id="main-terminal">
         <aside class="sidebar">
             <div id="profile-area" style="margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
@@ -115,8 +129,10 @@
     <script>
         const API_URL = "https://sheetdb.io/api/v1/oj0l2zb1m9qnd";
         const DRIVE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwB1dGM26Vsxo9hYoqZPyRJZ_7QY4fPOm4b-qrZKLfMT3QEoDVEmpbySlQMueOyGICqzw/exec";
-        // Rearranged AGENTS object to follow order: Yash, Tanay, Prem
+        
+        // Strict Order: Yash Raj, Tanay Singh, Prem Murmu
         const AGENTS = { "rajyash": "Yash Raj", "singhtanay": "Tanay Singh", "murmuprem": "Prem Murmu" };
+        
         const SYLLABUS = {
             p1: { title: "Paper 1", subName: "BUSINESS LAWS & COMMUNICATION", color: "var(--p1-red)", sections: [
                 { name: "SECTION A: BUSINESS LAWS", chapters: [{ name: "Introduction to Law", topics: ["Sources of Law", "Legislative Process", "Court System"] }, { name: "Indian Contract Act, 1872", topics: ["Offer & Acceptance", "Consideration", "Capacity", "Consent", "Breach"] }, { name: "Sale of Goods Act, 1930", topics: ["Formation", "Ownership", "Unpaid Seller"] }, { name: "Negotiable Instruments", topics: ["Types", "Sec 138"] }]},
@@ -141,7 +157,14 @@
 
         async function verify() {
             const val = document.getElementById('passCode').value;
-            if (AGENTS[val]) { activeAgent = AGENTS[val]; await fetchCloudData(); document.getElementById('login-screen').style.display = 'none'; document.getElementById('main-terminal').style.display = 'grid'; document.getElementById('agent-name').innerText = activeAgent; showView('home', document.querySelector('.nav-link')); }
+            if (AGENTS[val]) { 
+                activeAgent = AGENTS[val]; 
+                await fetchCloudData(); 
+                document.getElementById('login-screen').style.display = 'none'; 
+                document.getElementById('main-terminal').style.display = 'grid'; 
+                document.getElementById('agent-name').innerText = activeAgent; 
+                showView('home', document.querySelector('.nav-link')); 
+            }
         }
 
         async function fetchCloudData() {
@@ -195,15 +218,14 @@
             if (vid === 'home') {
                 vp.innerHTML = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">SQUAD ANALYTICS</h2>`;
                 
-                // Bar Chart
                 let chartHTML = `<div class="chart-container"><div class="y-axis"><span>100%</span><span>50%</span><span>0%</span></div>`;
+                // Order: Yash, Tanay, Prem
                 Object.values(AGENTS).forEach(name => {
                     const ov = getOverall(name);
                     chartHTML += `<div class="bar-wrapper"><span class="bar-val">${ov}%</span><div class="bar-pillar" style="height:${ov * 1.5}px"></div><span class="bar-label">${name.split(' ')[0]}</span></div>`;
                 });
                 chartHTML += `</div>`;
                 
-                // Scrollable Pie Charts
                 let pieHTML = `<div class="pie-scroll-container">`;
                 Object.values(AGENTS).forEach(name => {
                     const p1 = getProgress(name,'p1'), p2 = getProgress(name,'p2'), p3 = getProgress(name,'p3'), p4 = getProgress(name,'p4'), ov = getOverall(name);
