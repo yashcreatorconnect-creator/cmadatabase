@@ -2,178 +2,171 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CMA FOUNDATION | MICRO-INTEL UNIT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CMA FOUNDATION | SQUAD INTEL PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon-blue: #00d2ff; --neon-green: #00ff9f; --neon-purple: #9d50bb; --neon-orange: #ff9f00;
-            --bg-dark: #050505; --card-bg: rgba(15, 15, 20, 0.95); --border: 1px solid rgba(0, 210, 255, 0.2);
+            --p1-red: #ff0000; --p2-orange: #ff8c00; --p3-cyan: #00ffff; --p4-purple: #9d50bb;
+            --section-yellow: #ffff00; --ch-green: #39ff14; --topic-white: #ffffff;
+            --bg-dark: #050505; --card-bg: rgba(15, 15, 20, 0.95);
         }
-        * { box-sizing: border-box; transition: 0.2s ease; }
-        body { background: var(--bg-dark); color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0; overflow: hidden; }
-        #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; justify-content: center; align-items: center; background: #000; }
-        .auth-card { background: var(--card-bg); padding: 40px; border: var(--border); border-radius: 15px; text-align: center; }
-        input[type="password"] { background: transparent; border: none; border-bottom: 2px solid var(--neon-blue); color: var(--neon-blue); font-family: 'Orbitron'; font-size: 1.2rem; padding: 10px; width: 280px; text-align: center; outline: none; }
-        #main-terminal { display: none; height: 100vh; grid-template-columns: 260px 1fr; }
-        .sidebar { background: #0a0a0c; border-right: var(--border); padding: 20px; display: flex; flex-direction: column; }
-        .nav-link { padding: 12px; margin-bottom: 8px; border-radius: 5px; cursor: pointer; border: 1px solid transparent; font-size: 0.9rem; }
-        .nav-link:hover { background: rgba(0, 210, 255, 0.1); }
-        .nav-link.active { background: var(--neon-blue); color: #000; font-weight: bold; }
-        .content { overflow-y: auto; padding: 40px; background: rgba(0,0,0,0.4); }
-        .rank-box { background: #111; padding: 20px; border-radius: 10px; margin-bottom: 15px; border-left: 4px solid var(--neon-blue); cursor: pointer; }
-        .detail-view { display: none; padding: 20px; background: rgba(0,0,0,0.5); margin-top: 10px; align-items: center; justify-content: center; gap: 40px; }
-        .multi-pie { width: 120px; height: 120px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; background: #222; }
-        .multi-pie::after { content: ""; position: absolute; width: 85px; height: 85px; background: #111; border-radius: 50%; z-index: 2; }
-        .pie-text { position: relative; z-index: 3; font-family: 'Orbitron'; font-size: 1.2rem; }
-        .pie-legend { text-align: left; font-size: 0.8rem; font-family: 'Orbitron'; }
-        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; }
-        .chapter-block { background: var(--card-bg); border: var(--border); border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
-        .chapter-header { background: rgba(0, 210, 255, 0.05); padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
-        .topic-list { padding: 10px 20px; }
-        .topic-item { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.02); font-size: 0.95rem; opacity: 0.8; }
-        input[type="checkbox"] { appearance: none; width: 16px; height: 16px; border: 1px solid var(--neon-blue); border-radius: 3px; margin-right: 12px; cursor: pointer; position: relative; }
-        input[type="checkbox"]:checked { background: var(--neon-blue); }
-        input[type="checkbox"]:checked::after { content: '✓'; position: absolute; left: 3px; top: -2px; color: #000; font-size: 12px; font-weight: bold; }
-        .tag { font-size: 10px; padding: 2px 6px; border-radius: 3px; background: #222; margin-left: 10px; }
+        * { box-sizing: border-box; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg-dark); color: var(--topic-white); font-family: 'Rajdhani', sans-serif; margin: 0; overflow: hidden; touch-action: manipulation; }
+        
+        #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1a0000 0%, #000 100%); }
+        .auth-card { background: var(--card-bg); padding: 30px; border: 1px solid var(--p1-red); border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 30px rgba(255, 0, 0, 0.2); }
+        input[type="password"] { background: transparent; border: none; border-bottom: 2px solid var(--p1-red); color: var(--p1-red); font-family: 'Orbitron'; font-size: 1.2rem; padding: 10px; width: 100%; text-align: center; outline: none; }
+
+        #main-terminal { display: none; height: 100vh; grid-template-columns: 1fr; }
+        @media (min-width: 768px) { #main-terminal { grid-template-columns: 280px 1fr; } }
+
+        /* --- MOBILE NAVIGATION --- */
+        .sidebar { background: #0a0a0c; border-right: 1px solid rgba(255,255,255,0.05); padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
+        @media (max-width: 767px) { 
+            .sidebar { height: auto; border-right: none; border-bottom: 1px solid #333; padding: 15px; }
+            #main-terminal { grid-template-rows: auto 1fr; height: 100vh; }
+            .nav-container { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 5px; scrollbar-width: none; }
+            .nav-link { min-width: 140px; margin-bottom: 0 !important; font-size: 0.7rem !important; }
+        }
+
+        .nav-link { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.8rem; border-left: 4px solid transparent; opacity: 0.6; }
+        .nav-link.active { border-left-color: var(--p3-cyan); background: rgba(0, 255, 255, 0.1); opacity: 1; }
+
+        .content { overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
+        
+        /* --- MOBILE X/Y BAR CHART --- */
+        .chart-container { background: rgba(255,255,255,0.02); border: 1px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 30px; position: relative; height: 250px; display: flex; align-items: flex-end; justify-content: space-around; }
+        .y-axis { position: absolute; left: 10px; height: 75%; border-left: 1px solid #444; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.6rem; color: #666; padding-left: 5px; }
+        .bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 25%; position: relative; z-index: 5; }
+        .bar-pillar { width: 30px; background: linear-gradient(0deg, #111 0%, var(--ch-green) 100%); border-radius: 4px 4px 0 0; min-height: 2px; transition: height 1s ease; }
+        .bar-val { font-family: 'Orbitron'; font-size: 0.7rem; margin-bottom: 5px; color: var(--ch-green); }
+        .bar-label { font-family: 'Orbitron'; font-size: 0.6rem; margin-top: 10px; color: #888; text-align: center; }
+
+        .comp-item { background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border-left: 4px solid transparent; margin-bottom: 8px; }
+        .comp-label { font-size: 0.6rem; font-family: 'Orbitron'; opacity: 0.5; margin-bottom: 4px; }
+        .comp-bar-bg { height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
+
+        .rank-card { background: #111; padding: 15px; border-radius: 12px; margin-bottom: 12px; cursor: pointer; border: 1px solid #222; }
+        .detail-view { display: none; flex-direction: column; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 8px; margin-top: 10px; }
+        
+        /* --- CHECKLIST STYLING --- */
+        .ch-card { background: rgba(255,255,255,0.02); border: 1px solid var(--ch-green); margin-bottom: 15px; border-radius: 10px; overflow: hidden; }
+        .ch-head { padding: 12px 15px; background: rgba(57, 255, 20, 0.05); color: var(--ch-green); font-family: 'Orbitron'; font-size: 0.85rem; border-bottom: 1px solid #333; }
+        .topic-row { padding: 10px 15px; display: flex; align-items: center; border-bottom: 1px solid #222; font-size: 0.9rem; }
+        input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; accent-color: var(--p3-cyan); flex-shrink: 0; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div id="login-screen">
-        <div class="auth-card">
-            <h1 style="font-family:'Orbitron'; color:var(--neon-blue); letter-spacing:3px;">IDENTITY CHECK</h1>
-            <input type="password" id="passCode" placeholder="ENTER ACCESS KEY..." onkeydown="if(event.key==='Enter') verify()">
-        </div>
-    </div>
+    <div id="login-screen"><div class="auth-card"><h1 style="color:var(--p1-red); font-family:'Orbitron'; font-size: 1.2rem;">IDENTITY CHECK</h1><input type="password" id="passCode" placeholder="ACCESS KEY..." onkeydown="if(event.key==='Enter') verify()"></div></div>
     <div id="main-terminal">
         <aside class="sidebar">
-            <div style="margin-bottom:30px; border-bottom:1px solid #222; padding-bottom:15px;">
-                <div id="agent-name" style="font-family:'Orbitron'; color:var(--neon-green); font-size:1.1rem;">---</div>
-                <div id="overall-prog" style="color:var(--neon-blue); font-size:0.8rem; margin-top:5px;">MISSION: 0%</div>
+            <div id="profile-area" style="margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
+                <div id="agent-name" style="font-family:'Orbitron'; color:var(--ch-green); font-size: 1rem;">---</div>
+                <div id="overall-prog" style="color:var(--p3-cyan); font-size:0.75rem; margin-top:5px; font-family:'Orbitron';">MISSION: 0%</div>
             </div>
-            <nav id="sidebar-nav">
-                <div class="nav-link active" onclick="showView('home')">SQUAD HUB</div>
-                <div class="nav-link" onclick="showView('p1')">P1: LAWS & COMM</div>
-                <div class="nav-link" onclick="showView('p2')">P2: ACCOUNTS & COST</div>
-                <div class="nav-link" onclick="showView('p3')">P3: MATH & STATS</div>
-                <div class="nav-link" onclick="showView('p4')">P4: ECON & MGMT</div>
+            <nav id="sidebar-nav" class="nav-container">
+                <div class="nav-link active" onclick="showView('home', this)">SQUAD HUB</div>
+                <div class="nav-link" onclick="showView('p1', this)">P1: LAWS</div>
+                <div class="nav-link" onclick="showView('p2', this)">P2: ACCOUNTS</div>
+                <div class="nav-link" onclick="showView('p3', this)">P3: MATH</div>
+                <div class="nav-link" onclick="showView('p4', this)">P4: ECON</div>
             </nav>
-            <button onclick="location.reload()" style="margin-top:auto; background:none; border:1px solid #333; color:#666; padding:8px; cursor:pointer;">EXIT SYSTEM</button>
+            <button onclick="location.reload()" style="margin-top:auto; background:none; border:1px solid #444; color:#666; padding:8px; border-radius:5px; cursor:pointer; font-size: 0.7rem;">LOGOUT</button>
         </aside>
         <main class="content" id="viewport"></main>
     </div>
 
     <script>
         const API_URL = "https://sheetdb.io/api/v1/ovw2jw6xa21bm";
-        const AGENTS = { "singhtanay": "Tanay Singh", "murmurprem": "Prem Murmur", "rajyash": "Yash Raj" };
-        const MICRO_SYLLABUS = {
-            p1: { title: "Paper 1: Business Laws & Communication", chapters: [
-                { name: "Indian Contract Act, 1872", topics: ["Offer & Acceptance", "Consideration", "Capacity of Parties", "Free Consent", "Legality of Object", "Performance & Discharge"] },
-                { name: "Sale of Goods Act, 1930", topics: ["Formation of Contract", "Conditions & Warranties", "Transfer of Ownership", "Rights of Unpaid Seller"] },
-                { name: "Business Communication", topics: ["Process of Communication", "Types (Verbal/Non-Verbal)", "Barriers", "Modern Tools"] }
+        const AGENTS = { "singhtanay": "Tanay Singh", "murmuprem": "Prem Murmu", "rajyash": "Yash Raj" };
+        const SYLLABUS = {
+            p1: { title: "Paper 1", subName: "BUSINESS LAWS & COMMUNICATION", color: "var(--p1-red)", sections: [
+                { name: "SECTION A: BUSINESS LAWS", chapters: [{ name: "Introduction to Law", topics: ["Sources of Law", "Legislative Process", "Court System"] }, { name: "Indian Contract Act, 1872", topics: ["Offer & Acceptance", "Consideration", "Capacity", "Consent", "Breach"] }, { name: "Sale of Goods Act, 1930", topics: ["Formation", "Ownership", "Unpaid Seller"] }, { name: "Negotiable Instruments", topics: ["Types", "Sec 138"] }]},
+                { name: "SECTION B: COMMUNICATION", chapters: [{ name: "Comm Skills", topics: ["Principles", "Barriers", "Correspondence"] }]}
             ]},
-            p2: { title: "Paper 2: Financial & Cost Accounting", chapters: [
-                { name: "Accounting Fundamentals", topics: ["GAAP Principles", "Journal & Ledger", "Trial Balance", "BRS", "Depreciation"] },
-                { name: "Special Transactions", topics: ["Consignment Accounts", "Joint Venture", "Bills of Exchange"] },
-                { name: "Cost Accounting", topics: ["Basic Concepts", "Cost Sheet", "Material & Labour Cost"] }
+            p2: { title: "Paper 2", subName: "FINANCIAL & COST ACCOUNTING", color: "var(--p2-orange)", sections: [
+                { name: "SECTION A: FINANCIAL ACCOUNTS", chapters: [{ name: "Fundamentals", topics: ["GAAP", "Journal", "BRS", "Depreciation"] }, { name: "Special Transactions", topics: ["Consignment", "Joint Venture", "Bills"] }, { name: "Final Accounts", topics: ["Sole Prop", "NPO"] }]},
+                { name: "SECTION B: COST ACCOUNTS", chapters: [{ name: "Costing Basics", topics: ["Classification", "Cost Sheet"] }]}
             ]},
-            p3: { title: "Paper 3: Math & Statistics", chapters: [
-                { name: "Business Mathematics", topics: ["Ratio & Proportion", "Simple/Compound Interest", "AP & GP", "Sets & Indices", "Calculus Basics"] },
-                { name: "Business Statistics", topics: ["Data Representation", "Central Tendency", "Standard Deviation", "Probability", "Index Numbers"] }
+            p3: { title: "Paper 3", subName: "MATH & STATISTICS", color: "var(--p3-cyan)", sections: [
+                { name: "SECTION A: MATHEMATICS", chapters: [{ name: "Arithmetic", topics: ["Ratio", "Interest", "Progression"] }, { name: "Algebra", topics: ["Sets", "Permutations", "Quadratic"] }, { name: "Calculus", topics: ["Derivatives"] }]},
+                { name: "SECTION B: STATISTICS", chapters: [{ name: "Representation", topics: ["Diagrams", "Central Tendency", "Dispersion"] }, { name: "Advanced", topics: ["Correlation", "Probability", "Time Series"] }]}
             ]},
-            p4: { title: "Paper 4: Economics & Management", chapters: [
-                { name: "Economics", topics: ["Demand & Supply", "Market Forms", "Money & Banking", "PESTEL Analysis"] },
-                { name: "Management", topics: ["Management Process", "Planning & Decision Making", "Organizing & Staffing", "Leadership & Motivation"] }
+            p4: { title: "Paper 4", subName: "ECONOMICS & MANAGEMENT", color: "var(--p4-purple)", sections: [
+                { name: "SECTION A: ECONOMICS", chapters: [{ name: "Concepts", topics: ["Demand/Supply", "Production", "Cost"] }, { name: "Market/Banking", topics: ["Monopoly", "Money Functions", "PESTEL"] }]},
+                { name: "SECTION B: MANAGEMENT", chapters: [{ name: "Process", topics: ["Planning", "Leading", "Decision Making", "Motivation"] }]}
             ]}
         };
 
         let activeAgent = "";
-        let db = { "Tanay Singh": {}, "Prem Murmur": {}, "Yash Raj": {} };
+        let db = { "Tanay Singh": {}, "Prem Murmu": {}, "Yash Raj": {} };
 
         async function verify() {
             const val = document.getElementById('passCode').value;
-            if (AGENTS[val]) {
-                activeAgent = AGENTS[val];
-                await fetchCloudData();
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-terminal').style.display = 'grid';
-                document.getElementById('agent-name').innerText = activeAgent;
-                showView('home');
-            }
+            if (AGENTS[val]) { activeAgent = AGENTS[val]; await fetchCloudData(); document.getElementById('login-screen').style.display = 'none'; document.getElementById('main-terminal').style.display = 'grid'; document.getElementById('agent-name').innerText = activeAgent; showView('home', document.querySelector('.nav-link')); }
         }
 
         async function fetchCloudData() {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                data.forEach(row => {
-                    if (row.progress_data && row.progress_data !== "{}") db[row.agent_name] = JSON.parse(row.progress_data);
-                });
-            } catch (e) { console.error("Sync Error", e); }
+            try { const res = await fetch(API_URL); const data = await res.json(); data.forEach(row => { if (row.progress_data && row.progress_data !== "{}") db[row.agent_name] = JSON.parse(row.progress_data); }); } catch (e) {}
         }
 
         async function toggleTopic(key) {
             db[activeAgent][key] = !db[activeAgent][key];
             document.getElementById('overall-prog').innerText = "MISSION: " + getOverall(activeAgent) + "%";
-            await fetch(`${API_URL}/agent_name/${activeAgent}`, {
-                method: 'PATCH',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) })
-            });
+            await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
         }
 
-        function getProgress(name, paperKey) {
-            let total = 0, done = 0;
-            MICRO_SYLLABUS[paperKey].chapters.forEach(ch => {
-                ch.topics.forEach(t => { total++; if (db[name][paperKey + ch.name + t]) done++; });
-            });
-            return (done / total) * 100 || 0;
+        function getChProgress(name, pk, chName) {
+            let t = 0, d = 0;
+            SYLLABUS[pk].sections.forEach(s => s.chapters.filter(c => c.name === chName).forEach(c => c.topics.forEach(tp => { t++; if (db[name][pk+c.name+tp]) d++; })));
+            return Math.round((d/t)*100) || 0;
         }
 
-        function getOverall(name) {
-            return Math.round((['p1','p2','p3','p4'].reduce((acc, p) => acc + getProgress(name, p), 0)) / 4);
+        function getProgress(name, pk) {
+            let t = 0, d = 0; SYLLABUS[pk].sections.forEach(s => s.chapters.forEach(c => c.topics.forEach(tp => { t++; if (db[name][pk+c.name+tp]) d++; })));
+            return (d/t)*100 || 0;
         }
 
-        function showView(vid) {
-            const vp = document.getElementById('viewport');
-            vp.innerHTML = "";
+        function getOverall(n) { return Math.round((['p1','p2','p3','p4'].reduce((a,p) => a + getProgress(n,p), 0))/4); }
+
+        function showView(vid, el) {
+            const vp = document.getElementById('viewport'); vp.innerHTML = "";
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
+
             if (vid === 'home') {
-                vp.innerHTML = `<h1 style="font-family:'Orbitron'">SQUAD INTELLIGENCE HUB</h1>`;
+                vp.innerHTML = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">SQUAD ANALYTICS</h2>`;
+                let chartHTML = `<div class="chart-container"><div class="y-axis"><span>100%</span><span>50%</span><span>0%</span></div>`;
                 Object.values(AGENTS).forEach(name => {
-                    const p1 = getProgress(name, 'p1'), p2 = getProgress(name, 'p2'), p3 = getProgress(name, 'p3'), p4 = getProgress(name, 'p4');
-                    const over = Math.round((p1 + p2 + p3 + p4) / 4);
+                    const ov = getOverall(name);
+                    chartHTML += `<div class="bar-wrapper"><span class="bar-val">${ov}%</span><div class="bar-pillar" style="height:${ov * 1.5}px"></div><span class="bar-label">${name.split(' ')[0]}</span></div>`;
+                });
+                vp.innerHTML += chartHTML + `</div>`;
+
+                Object.values(AGENTS).forEach(name => {
+                    const ov = getOverall(name);
                     const safeId = name.replace(/\s/g, '');
-                    const s1 = p1 * 0.25, s2 = p2 * 0.25, s3 = p3 * 0.25, s4 = p4 * 0.25;
-                    vp.innerHTML += `
-                        <div class="rank-box" onclick="const d=document.getElementById('det-${safeId}'); d.style.display=(d.style.display==='flex'?'none':'flex')">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>AGENT: ${name}</span><span style="color:var(--neon-green)">${over}%</span></div>
-                            <div style="height:6px; background:#222; border-radius:3px; overflow:hidden;"><div style="width:${over}%; height:100%; background:linear-gradient(90deg, var(--neon-blue), var(--neon-purple))"></div></div>
-                            <div class="detail-view" id="det-${safeId}">
-                                <div class="multi-pie" style="background: conic-gradient(var(--neon-blue) 0% ${s1}%, #222 ${s1}% 25%, var(--neon-purple) 25% ${25+s2}%, #222 ${25+s2}% 50%, var(--neon-green) 50% ${50+s3}%, #222 ${50+s3}% 75%, var(--neon-orange) 75% ${75+s4}%, #222 ${75+s4}% 100%)">
-                                    <span class="pie-text">${over}%</span>
-                                </div>
-                                <div class="pie-legend">
-                                    <div class="legend-item"><div class="dot" style="background:var(--neon-blue)"></div> P1: ${Math.round(p1)}%</div>
-                                    <div class="legend-item"><div class="dot" style="background:var(--neon-purple)"></div> P2: ${Math.round(p2)}%</div>
-                                    <div class="legend-item"><div class="dot" style="background:var(--neon-green)"></div> P3: ${Math.round(p3)}%</div>
-                                    <div class="legend-item"><div class="dot" style="background:var(--neon-orange)"></div> P4: ${Math.round(p4)}%</div>
-                                </div>
-                            </div>
-                        </div>`;
+                    let sequentialHTML = "";
+                    Object.keys(SYLLABUS).forEach(pk => {
+                        const paper = SYLLABUS[pk];
+                        paper.sections.forEach(s => s.chapters.forEach(ch => {
+                            const chProg = getChProgress(name, pk, ch.name);
+                            sequentialHTML += `<div class="comp-item" style="border-left-color:${paper.color}"><div class="comp-label">${paper.title} | ${s.name}</div><div style="display:flex; justify-content:space-between; font-size:0.75rem"><span>${ch.name}</span><span>${chProg}%</span></div><div class="comp-bar-bg"><div style="height:100%; width:${chProg}%; background:${paper.color}"></div></div></div>`;
+                        }));
+                    });
+                    vp.innerHTML += `<div class="rank-card" onclick="const d=document.getElementById('det-${safeId}'); d.style.display=(d.style.display==='flex'?'none':'flex')"><div style="display:flex; justify-content:space-between; font-family:'Orbitron'; font-size:0.8rem"><span>${name}</span><span style="color:var(--ch-green)">${ov}%</span></div><div class="detail-view" id="det-${safeId}">${sequentialHTML}</div></div>`;
                 });
             } else {
-                const data = MICRO_SYLLABUS[vid];
-                vp.innerHTML = `<h1 style="color:var(--neon-blue)">${data.title}</h1>`;
-                data.chapters.forEach(ch => {
-                    let chHtml = `<div class="chapter-block"><div class="chapter-header"><span style="font-weight:bold; font-family:'Orbitron'">${ch.name}</span><span class="tag">${ch.topics.length} TARGETS</span></div><div class="topic-list">`;
-                    ch.topics.forEach(t => {
-                        const key = vid + ch.name + t;
-                        const checked = db[activeAgent][key] ? 'checked' : '';
-                        chHtml += `<div class="topic-item"><input type="checkbox" onchange="toggleTopic('${key}')" ${checked}><span>${t}</span></div>`;
+                const data = SYLLABUS[vid]; 
+                vp.innerHTML = `<h1 style="color:${data.color}; font-family:'Orbitron'; font-size:1.4rem; margin:0">${data.title}</h1> <p style="color:#666; font-family:'Orbitron'; font-size:0.75rem; margin-top:5px; margin-bottom:20px">${data.subName}</p>`;
+                data.sections.forEach(sec => {
+                    vp.innerHTML += `<div style="background:var(--section-yellow); color:#000; padding:8px 12px; margin:15px 0; font-family:'Orbitron'; border-radius:4px; font-size:0.75rem; font-weight:bold">${sec.name}</div>`;
+                    sec.chapters.forEach(ch => {
+                        let h = `<div class="ch-card"><div class="ch-head"><span>${ch.name}</span></div><div class="topic-body">`;
+                        ch.topics.forEach(t => { const k = vid+ch.name+t; const c = db[activeAgent][k]?'checked':''; h += `<div class="topic-row"><input type="checkbox" onchange="toggleTopic('${k}')" ${c} style="accent-color:${data.color}"><span>${t}</span></div>`; });
+                        vp.innerHTML += h + `</div></div>`;
                     });
-                    vp.innerHTML += chHtml + `</div></div>`;
                 });
             }
         }
