@@ -12,20 +12,24 @@
             --bg-dark: #050505; --card-bg: rgba(15, 15, 20, 0.95);
         }
         * { box-sizing: border-box; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); -webkit-tap-highlight-color: transparent; }
-        body { 
-            background: var(--bg-dark); 
-            color: var(--topic-white); 
-            font-family: 'Rajdhani', sans-serif; 
-            margin: 0; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh; 
-        }
+        body { background: var(--bg-dark); color: var(--topic-white); font-family: 'Rajdhani', sans-serif; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
         
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1a0000 0%, #000 100%); }
         .auth-card { background: var(--card-bg); padding: 30px; border: 1px solid var(--p1-red); border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 30px rgba(255, 0, 0, 0.2); }
         
+        /* Logo Styles */
+        .logo-box { position: relative; width: 100px; height: 100px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
+        .logo-img { width: 100%; height: 100%; object-fit: contain; animation: breathing 3s ease-in-out infinite; }
+        .sidebar-logo-container { text-align: center; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
+        .sidebar-logo { width: 45px; height: 45px; border-radius: 50%; animation: orbitGlow 4s ease-in-out infinite; filter: drop-shadow(0 0 5px var(--p3-cyan)); }
+
+        /* Loading Screen */
+        #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
+        .loader-logo { width: 80px; height: 80px; animation: breathing 1.5s infinite; }
+
+        @keyframes breathing { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--p1-red)); } 50% { transform: scale(1.05); filter: drop-shadow(0 0 15px var(--p1-red)); } }
+        @keyframes orbitGlow { 0%, 100% { filter: drop-shadow(0 0 5px var(--p3-cyan)); border-color: var(--p3-cyan); } 50% { filter: drop-shadow(0 0 12px var(--ch-green)); border-color: var(--ch-green); } }
+
         .pass-input-wrapper { position: relative; display: flex; align-items: center; border-bottom: 2px solid var(--p1-red); margin-top: 20px; }
         input[type="password"] { background: transparent; border: none; color: var(--p1-red); font-family: 'Orbitron'; font-size: 1.2rem; padding: 10px; width: 100%; text-align: center; outline: none; }
         .login-arrow { background: none; border: none; color: var(--p1-red); font-size: 1.5rem; cursor: pointer; padding: 0 10px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -35,17 +39,11 @@
         @media (min-width: 768px) { #main-terminal { grid-template-columns: 280px 1fr; } }
 
         .sidebar { background: #0a0a0c; border-right: 1px solid rgba(255,255,255,0.05); padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
-        @media (max-width: 767px) { 
-            .sidebar { height: auto; border-right: none; border-bottom: 1px solid #333; padding: 15px; }
-            #main-terminal { grid-template-rows: auto 1fr; }
-            .nav-container { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 5px; scrollbar-width: none; }
-            .nav-link { min-width: 140px; margin-bottom: 0 !important; font-size: 0.7rem !important; }
-        }
+        @media (max-width: 767px) { .sidebar { height: auto; border-right: none; border-bottom: 1px solid #333; padding: 15px; } .sidebar-logo-container { display: none; } #main-terminal { grid-template-rows: auto 1fr; } .nav-container { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 5px; scrollbar-width: none; } .nav-link { min-width: 140px; margin-bottom: 0 !important; font-size: 0.7rem !important; } }
 
         .nav-link { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.8rem; border-left: 4px solid transparent; opacity: 0.6; }
         .nav-link.active { border-left-color: var(--p3-cyan); background: rgba(0, 255, 255, 0.1); opacity: 1; }
-
-        .content { overflow-y: auto; padding: 20px 20px 100px 20px; -webkit-overflow-scrolling: touch; flex: 1; position: relative; }
+        .content { overflow-y: auto; padding: 20px 20px 100px 20px; flex: 1; position: relative; }
         
         .chart-container { background: rgba(255,255,255,0.02); border: 1px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 30px; position: relative; height: 250px; display: flex; align-items: flex-end; justify-content: space-around; }
         .y-axis { position: absolute; left: 10px; height: 75%; border-left: 1px solid #444; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.6rem; color: #666; padding-left: 5px; }
@@ -73,35 +71,26 @@
         .topic-row { padding: 10px 15px; display: flex; align-items: center; border-bottom: 1px solid #222; font-size: 0.9rem; }
         input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; accent-color: var(--p3-cyan); flex-shrink: 0; cursor: pointer; }
 
-        .upload-btn { background: var(--p3-cyan); color: #000; padding: 4px 8px; border-radius: 4px; font-size: 0.6rem; font-family: 'Orbitron'; cursor: pointer; display: none; font-weight: bold; border: none; }
+        .upload-btn { background: var(--p3-cyan); color: #000; padding: 4px 8px; border-radius: 4px; font-size: 0.6rem; font-family: 'Orbitron'; cursor: pointer; font-weight: bold; border: none; }
+        .lock-btn-fixed { background: rgba(255, 0, 0, 0.2); color: var(--p1-red); padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-family: 'Orbitron'; border: 1px solid var(--p1-red); cursor: pointer; display: flex; align-items: center; gap: 5px; }
 
-        .footer { 
-            background: rgba(0, 0, 0, 0.95); 
-            border-top: 1px solid rgba(255, 255, 255, 0.1); 
-            padding: 15px 10px; 
-            text-align: center; 
-            font-family: 'Orbitron', sans-serif; 
-            font-size: 0.65rem; 
-            letter-spacing: 2px; 
-            color: rgba(255, 255, 255, 0.5); 
-            text-transform: uppercase; 
-            width: 100%; 
-            flex-shrink: 0;
-            margin-top: auto;
-        }
-        .footer span { color: var(--p3-cyan); text-shadow: 0 0 5px var(--p3-cyan); }
+        .footer { background: rgba(0, 0, 0, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); padding: 15px 10px; text-align: center; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; color: rgba(255, 255, 255, 0.5); width: 100%; flex-shrink: 0; margin-top: auto; }
+        .footer span { color: var(--p3-cyan); }
 
         .node-card { background: rgba(255,255,255,0.02); border: 1px solid #222; padding: 15px; border-radius: 10px; margin-bottom: 10px; position: relative; overflow: hidden; }
         .node-hash { font-family: 'Orbitron'; font-size: 0.5rem; color: #444; margin-top: 5px; word-break: break-all; }
         .node-status { float: right; font-family: 'Orbitron'; font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; }
-        
         .lock-container { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 0, 0, 0.05); border: 1px dashed var(--p1-red); border-radius: 15px; padding: 40px 20px; text-align: center; margin-bottom: 20px; }
-        .lock-icon { font-size: 3rem; margin-bottom: 15px; color: var(--p1-red); text-shadow: 0 0 10px var(--p1-red); }
     </style>
 </head>
 <body>
+    <div id="loading-overlay">
+        <img src="assets/server-icon.png" class="loader-logo" alt="Loading">
+    </div>
+
     <div id="login-screen">
         <div class="auth-card">
+            <div class="logo-box"><img src="assets/server-icon.png" alt="SQUAD" class="logo-img"></div>
             <h1 style="color:var(--p1-red); font-family:'Orbitron'; font-size: 1.2rem;">IDENTITY CHECK</h1>
             <div class="pass-input-wrapper">
                 <input type="password" id="passCode" placeholder="ACCESS KEY..." onkeydown="if(event.key==='Enter') verify()">
@@ -112,7 +101,8 @@
 
     <div id="main-terminal">
         <aside class="sidebar">
-            <div id="profile-area" style="margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
+            <div class="sidebar-logo-container">
+                <img src="assets/server-icon.png" class="sidebar-logo" alt="logo">
                 <div id="agent-name" style="font-family:'Orbitron'; color:var(--ch-green); font-size: 1rem;">---</div>
                 <div id="overall-prog" style="color:var(--p3-cyan); font-size:0.75rem; margin-top:5px; font-family:'Orbitron';">MISSION: 0%</div>
             </div>
@@ -124,171 +114,108 @@
                 <div class="nav-link" onclick="showView('p3', this)">P3: MATH</div>
                 <div class="nav-link" onclick="showView('p4', this)">P4: ECON</div>
             </nav>
-            <button onclick="location.reload()" style="margin-top:auto; background:none; border:1px solid #444; color:#666; padding:8px; border-radius:5px; cursor:pointer; font-size: 0.7rem;">LOGOUT</button>
+            <button onclick="location.reload()" style="margin-top:auto; background:none; border:1px solid #444; color:#666; padding:8px; border-radius:5px; cursor:pointer; font-size: 0.7rem; font-family:'Orbitron';">LOGOUT</button>
         </aside>
         <main class="content" id="viewport"></main>
     </div>
 
-    <footer class="footer">
-        ALL RIGHTS ARE PRIVATE <span>© NOTZIE 2026</span>
-    </footer>
+    <footer class="footer">ALL RIGHTS ARE PRIVATE <span>© NOTZIE 2026</span></footer>
 
     <script>
         const API_URL = "https://sheetdb.io/api/v1/oj0l2zb1m9qnd";
         const DRIVE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwB1dGM26Vsxo9hYoqZPyRJZ_7QY4fPOm4b-qrZKLfMT3QEoDVEmpbySlQMueOyGICqzw/exec";
-        
         const AGENTS = { "rajyash": "Yash Raj", "singhtanay": "Tanay Singh", "murmuprem": "Prem Murmu" };
-        
         const SYLLABUS = {
-            p1: { title: "Paper 1", subName: "BUSINESS LAWS & COMMUNICATION", color: "var(--p1-red)", sections: [
-                { name: "SECTION A: BUSINESS LAWS", chapters: [{ name: "Introduction to Law", topics: ["Sources of Law", "Legislative Process", "Court System"] }, { name: "Indian Contract Act, 1872", topics: ["Offer & Acceptance", "Consideration", "Capacity", "Consent", "Breach"] }, { name: "Sale of Goods Act, 1930", topics: ["Formation", "Ownership", "Unpaid Seller"] }, { name: "Negotiable Instruments", topics: ["Types", "Sec 138"] }]},
-                { name: "SECTION B: COMMUNICATION", chapters: [{ name: "Comm Skills", topics: ["Principles", "Barriers", "Correspondence"] }]}
-            ]},
-            p2: { title: "Paper 2", subName: "FINANCIAL & COST ACCOUNTING", color: "var(--p2-orange)", sections: [
-                { name: "SECTION A: FINANCIAL ACCOUNTS", chapters: [{ name: "Fundamentals", topics: ["GAAP", "Journal", "BRS", "Depreciation"] }, { name: "Special Transactions", topics: ["Consignment", "Joint Venture", "Bills"] }, { name: "Final Accounts", topics: ["Sole Prop", "NPO"] }]},
-                { name: "SECTION B: COST ACCOUNTS", chapters: [{ name: "Costing Basics", topics: ["Classification", "Cost Sheet"] }]}
-            ]},
-            p3: { title: "Paper 3", subName: "MATH & STATISTICS", color: "var(--p3-cyan)", sections: [
-                { name: "SECTION A: MATHEMATICS", chapters: [{ name: "Arithmetic", topics: ["Ratio", "Interest", "Progression"] }, { name: "Algebra", topics: ["Sets", "Permutations", "Quadratic"] }, { name: "Calculus", topics: ["Derivatives"] }]},
-                { name: "SECTION B: STATISTICS", chapters: [{ name: "Representation", topics: ["Diagrams", "Central Tendency", "Dispersion"] }, { name: "Advanced", topics: ["Correlation", "Probability", "Time Series"] }]}
-            ]},
-            p4: { title: "Paper 4", subName: "ECONOMICS & MANAGEMENT", color: "var(--p4-purple)", sections: [
-                { name: "SECTION A: ECONOMICS", chapters: [{ name: "Concepts", topics: ["Demand/Supply", "Production", "Cost"] }, { name: "Market/Banking", topics: ["Monopoly", "Money Functions", "PESTEL"] }]},
-                { name: "SECTION B: MANAGEMENT", chapters: [{ name: "Process", topics: ["Planning", "Leading", "Decision Making", "Motivation"] }]}
-            ]}
+            p1: { title: "Paper 1", subName: "BUSINESS LAWS & COMMUNICATION", color: "var(--p1-red)", sections: [{ name: "SECTION A: BUSINESS LAWS", chapters: [{ name: "Introduction to Law", topics: ["Sources of Law", "Legislative Process", "Court System"] }, { name: "Indian Contract Act, 1872", topics: ["Offer & Acceptance", "Consideration", "Capacity", "Consent", "Breach"] }, { name: "Sale of Goods Act, 1930", topics: ["Formation", "Ownership", "Unpaid Seller"] }, { name: "Negotiable Instruments", topics: ["Types", "Sec 138"] }]}, { name: "SECTION B: COMMUNICATION", chapters: [{ name: "Comm Skills", topics: ["Principles", "Barriers", "Correspondence"] }]}]},
+            p2: { title: "Paper 2", subName: "FINANCIAL & COST ACCOUNTING", color: "var(--p2-orange)", sections: [{ name: "SECTION A: FINANCIAL ACCOUNTS", chapters: [{ name: "Fundamentals", topics: ["GAAP", "Journal", "BRS", "Depreciation"] }, { name: "Special Transactions", topics: ["Consignment", "Joint Venture", "Bills"] }, { name: "Final Accounts", topics: ["Sole Prop", "NPO"] }]}, { name: "SECTION B: COST ACCOUNTS", chapters: [{ name: "Costing Basics", topics: ["Classification", "Cost Sheet"] }]}]},
+            p3: { title: "Paper 3", subName: "MATH & STATISTICS", color: "var(--p3-cyan)", sections: [{ name: "SECTION A: MATHEMATICS", chapters: [{ name: "Arithmetic", topics: ["Ratio", "Interest", "Progression"] }, { name: "Algebra", topics: ["Sets", "Permutations", "Quadratic"] }, { name: "Calculus", topics: ["Derivatives"] }]}, { name: "SECTION B: STATISTICS", chapters: [{ name: "Representation", topics: ["Diagrams", "Central Tendency", "Dispersion"] }, { name: "Advanced", topics: ["Correlation", "Probability", "Time Series"] }]}]},
+            p4: { title: "Paper 4", subName: "ECONOMICS & MANAGEMENT", color: "var(--p4-purple)", sections: [{ name: "SECTION A: ECONOMICS", chapters: [{ name: "Concepts", topics: ["Demand/Supply", "Production", "Cost"] }, { name: "Market/Banking", topics: ["Monopoly", "Money Functions", "PESTEL"] }]}, { name: "SECTION B: MANAGEMENT", chapters: [{ name: "Process", topics: ["Planning", "Leading", "Decision Making", "Motivation"] }]}]}
         };
 
-        let activeAgent = "";
-        let db = { "Tanay Singh": {}, "Prem Murmu": {}, "Yash Raj": {} };
-        let countdownTimer;
+        let activeAgent = "", db = { "Tanay Singh": {}, "Prem Murmu": {}, "Yash Raj": {} }, countdownTimer;
 
-        function getStudyDay() {
-            const now = new Date();
-            if (now.getHours() < 4) now.setDate(now.getDate() - 1);
-            return now.toLocaleDateString('en-GB');
-        }
-
-        function updateCountdown() {
-            const el = document.getElementById('reset-timer');
-            if (!el) return;
-            const now = new Date();
-            const launchDate = new Date(2026, 3, 1, 4, 0, 0); 
-
-            if (now < launchDate) {
-                const diff = launchDate - now;
-                const d = Math.floor(diff / 86400000);
-                const h = Math.floor((diff % 86400000) / 3600000);
-                const m = Math.floor((diff % 3600000) / 60000);
-                const s = Math.floor((diff % 60000) / 1000);
-                el.innerText = `OPENING IN: ${d}D ${h}H ${m}M ${s}S`;
-                return;
-            }
-
-            let target = new Date();
-            target.setHours(4, 0, 0, 0);
-            if (now.getHours() >= 4) target.setDate(target.getDate() + 1);
-            const diff = target - now;
-            const h = Math.floor(diff / 3600000);
-            const m = Math.floor((diff % 3600000) / 60000);
-            const s = Math.floor((diff % 60000) / 1000);
-            el.innerText = `RESET IN: ${h}H ${m}M ${s}S`;
-        }
+        function showLoading() { document.getElementById('loading-overlay').style.display = 'flex'; }
+        function hideLoading() { document.getElementById('loading-overlay').style.display = 'none'; }
 
         async function verify() {
             const val = document.getElementById('passCode').value;
-            if (AGENTS[val]) { 
-                activeAgent = AGENTS[val]; 
-                await fetchCloudData(); 
-                document.getElementById('login-screen').style.display = 'none'; 
-                document.getElementById('main-terminal').style.display = 'grid'; 
-                document.getElementById('agent-name').innerText = activeAgent; 
-                showView('home', document.querySelector('.nav-link')); 
-            }
+            if (AGENTS[val]) { activeAgent = AGENTS[val]; await fetchCloudData(); document.getElementById('login-screen').style.display = 'none'; document.getElementById('main-terminal').style.display = 'grid'; document.getElementById('agent-name').innerText = activeAgent; showView('home', document.querySelector('.nav-link')); }
         }
 
         async function fetchCloudData() {
-            try { 
-                const res = await fetch(API_URL); 
-                const data = await res.json(); 
-                data.forEach(async row => { 
-                    if (row.progress_data && row.progress_data !== "{}") {
-                        let parsed = JSON.parse(row.progress_data);
-                        // Reset Logic: If logs exist, clear them and sync back to DB once
-                        if (parsed.logs && parsed.logs.length > 0) {
-                            parsed.logs = []; 
-                            await fetch(`${API_URL}/agent_name/${row.agent_name}`, { 
-                                method: 'PATCH', 
-                                headers: {'Content-Type': 'application/json'}, 
-                                body: JSON.stringify({ "progress_data": JSON.stringify(parsed) }) 
-                            });
-                        }
-                        db[row.agent_name] = parsed;
-                    } 
-                }); 
-            } catch (e) {}
+            try { const res = await fetch(API_URL); const data = await res.json(); data.forEach(row => { if (row.progress_data) db[row.agent_name] = JSON.parse(row.progress_data); }); } catch (e) {}
         }
 
         async function toggleTopic(key, paperKey, chName) {
             db[activeAgent][key] = !db[activeAgent][key];
             document.getElementById('overall-prog').innerText = "MISSION: " + getOverall(activeAgent) + "%";
             await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
-            checkArchiveAvailability(paperKey, chName);
+            showView(paperKey);
         }
 
-        async function markAttendance() {
-            const now = new Date();
-            const launchDate = new Date(2026, 3, 1, 4, 0, 0);
-            if (now < launchDate) return alert("SYSTEM LOCKED: VACATION PERIOD ACTIVE.");
-
-            const studyDay = getStudyDay();
-            if(!db[activeAgent].logs) db[activeAgent].logs = [];
-            if(db[activeAgent].logs.includes(studyDay)) return alert("SESSION ALREADY LOGGED FOR THIS CYCLE.");
-            
-            db[activeAgent].logs.push(studyDay);
-            const btn = document.getElementById('checkin-btn');
-            btn.innerText = "SYNCING...";
-            await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
-            showView('attendance');
-        }
-
-        function checkArchiveAvailability(pk, chName) {
-            const prog = getChProgress(activeAgent, pk, chName);
-            const btn = document.getElementById(`up-${pk}-${chName.replace(/\s/g, '')}`);
-            if (btn) btn.style.display = (prog === 100) ? 'block' : 'none';
+        async function unlockChapter(pk, chName) {
+            if(confirm(`MANUALLY UNLOCK ${chName}? ALL DRIVE FILES WILL BE DELETED.`)) {
+                showLoading();
+                await fetch(DRIVE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ agent: activeAgent, paper: SYLLABUS[pk].title, chapter: chName, action: "DELETE" }) });
+                delete db[activeAgent][pk + chName + "_archived"];
+                await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
+                showView(pk);
+                setTimeout(hideLoading, 500);
+            }
         }
 
         async function archiveChapter(pk, chName) {
             const input = document.createElement('input'); input.type = 'file'; input.multiple = true; input.accept = 'image/*';
             input.onchange = async (e) => {
+                showLoading();
                 const files = Array.from(e.target.files);
-                const btn = document.getElementById(`up-${pk}-${chName.replace(/\s/g, '')}`);
-                btn.innerText = "ZIPPING..."; btn.style.opacity = "0.5";
                 const fileData = await Promise.all(files.map(file => new Promise(res => { const r = new FileReader(); r.onload = ev => res({ data: ev.target.result.split(',')[1], type: file.type }); r.readAsDataURL(file); })));
-                await fetch(DRIVE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ agent: activeAgent, paper: SYLLABUS[pk].title, chapter: chName, files: fileData }) });
-                btn.innerText = "ARCHIVED"; btn.style.background = "var(--ch-green)";
+                await fetch(DRIVE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ agent: activeAgent, paper: SYLLABUS[pk].title, chapter: chName, files: fileData, action: "UPLOAD" }) });
+                db[activeAgent][pk + chName + "_archived"] = true;
+                await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
+                showView(pk);
+                hideLoading();
             };
             input.click();
         }
 
-        function getChProgress(name, pk, chName) {
-            let t = 0, d = 0;
-            SYLLABUS[pk].sections.forEach(s => s.chapters.filter(c => c.name === chName).forEach(c => c.topics.forEach(tp => { t++; if (db[name][pk+c.name+tp]) d++; })));
-            return Math.round((d/t)*100) || 0;
+        async function markAttendance() {
+            const studyDay = new Date().toLocaleDateString('en-GB');
+            if(db[activeAgent].logs?.includes(studyDay)) return alert("ALREADY LOGGED.");
+            if(!db[activeAgent].logs) db[activeAgent].logs = [];
+            db[activeAgent].logs.push(studyDay);
+            await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
+            showView('attendance');
         }
 
+        function getStudyDay() { const now = new Date(); if (now.getHours() < 4) now.setDate(now.getDate() - 1); return now.toLocaleDateString('en-GB'); }
+        function updateCountdown() {
+            const el = document.getElementById('reset-timer'); if (!el) return;
+            const now = new Date(); const launchDate = new Date(2026, 3, 1, 4, 0, 0); 
+            if (now < launchDate) {
+                const diff = launchDate - now, d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+                el.innerText = `OPENING IN: ${d}D ${h}H ${m}M ${s}S`; return;
+            }
+            let target = new Date(); target.setHours(4, 0, 0, 0); if (now.getHours() >= 4) target.setDate(target.getDate() + 1);
+            const diff = target - now, h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+            el.innerText = `RESET IN: ${h}H ${m}M ${s}S`;
+        }
+
+        function getChProgress(name, pk, chName) {
+            let t = 0, d = 0; SYLLABUS[pk].sections.forEach(s => s.chapters.filter(c => c.name === chName).forEach(c => c.topics.forEach(tp => { t++; if (db[name][pk+c.name+tp]) d++; })));
+            return Math.round((d/t)*100) || 0;
+        }
         function getProgress(name, pk) {
             let t = 0, d = 0; SYLLABUS[pk].sections.forEach(s => s.chapters.forEach(c => c.topics.forEach(tp => { t++; if (db[name][pk+c.name+tp]) d++; })));
             return (d/t)*100 || 0;
         }
-
         function getOverall(n) { return Math.round((['p1','p2','p3','p4'].reduce((a,p) => a + getProgress(n,p), 0))/4); }
 
         function showView(vid, el) {
             clearInterval(countdownTimer);
             const vp = document.getElementById('viewport'); vp.innerHTML = "";
-            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-            if(el) el.classList.add('active');
-
+            if (el) { document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+            
             if (vid === 'home') {
                 vp.innerHTML = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">SQUAD ANALYTICS</h2>`;
                 let chartHTML = `<div class="chart-container"><div class="y-axis"><span>100%</span><span>50%</span><span>0%</span></div>`;
@@ -296,76 +223,42 @@
                     const ov = getOverall(name);
                     chartHTML += `<div class="bar-wrapper"><span class="bar-val">${ov}%</span><div class="bar-pillar" style="height:${ov * 1.5}px"></div><span class="bar-label">${name.split(' ')[0]}</span></div>`;
                 });
-                chartHTML += `</div>`;
-                let pieHTML = `<div class="pie-scroll-container">`;
+                chartHTML += `</div><div class="pie-scroll-container">`;
                 Object.values(AGENTS).forEach(name => {
-                    const p1 = getProgress(name,'p1'), p2 = getProgress(name,'p2'), p3 = getProgress(name,'p3'), p4 = getProgress(name,'p4'), ov = getOverall(name);
-                    pieHTML += `<div class="pie-card"><div class="multi-pie" style="background: conic-gradient(var(--p1-red) 0% ${p1*0.25}%, #222 ${p1*0.25}% 25%, var(--p2-orange) 25% ${25+p2*0.25}%, #222 ${25+p2*0.25}% 50%, var(--p3-cyan) 50% ${50+p3*0.25}%, #222 ${50+p3*0.25}% 75%, var(--p4-purple) 75% ${75+p4*0.25}%, #222 ${75+p4*0.25}% 100%)"><div class="pie-val">${ov}%</div></div><div class="pie-label">${name.split(' ')[0]}</div></div>`;
+                    const ov = getOverall(name), p1 = getProgress(name,'p1'), p2 = getProgress(name,'p2'), p3 = getProgress(name,'p3'), p4 = getProgress(name,'p4');
+                    chartHTML += `<div class="pie-card"><div class="multi-pie" style="background: conic-gradient(var(--p1-red) 0% ${p1*0.25}%, #222 ${p1*0.25}% 25%, var(--p2-orange) 25% ${25+p2*0.25}%, #222 ${25+p2*0.25}% 50%, var(--p3-cyan) 50% ${50+p3*0.25}%, #222 ${50+p3*0.25}% 75%, var(--p4-purple) 75% ${75+p4*0.25}%, #222 ${75+p4*0.25}% 100%)"><div class="pie-val">${ov}%</div></div><div class="pie-label">${name.split(' ')[0]}</div></div>`;
                 });
-                pieHTML += `</div>`;
-                vp.innerHTML += chartHTML + pieHTML;
+                vp.innerHTML += chartHTML + `</div>`;
                 Object.values(AGENTS).forEach(name => {
-                    const ov = getOverall(name);
-                    const safeId = name.replace(/\s/g, '');
-                    let sequentialHTML = "";
-                    Object.keys(SYLLABUS).forEach(pk => {
-                        const paper = SYLLABUS[pk];
-                        paper.sections.forEach(s => s.chapters.forEach(ch => {
-                            const chProg = getChProgress(name, pk, ch.name);
-                            sequentialHTML += `<div class="comp-item" style="border-left-color:${paper.color}"><div class="comp-label">${paper.title} | ${s.name}</div><div style="display:flex; justify-content:space-between; font-size:0.75rem"><span>${ch.name}</span><span>${chProg}%</span></div><div class="comp-bar-bg"><div style="height:100%; width:${chProg}%; background:${paper.color}"></div></div></div>`;
-                        }));
-                    });
-                    vp.innerHTML += `<div class="rank-card" onclick="const d=document.getElementById('det-${safeId}'); d.style.display=(d.style.display==='flex'?'none':'flex')"><div style="display:flex; justify-content:space-between; font-family:'Orbitron'; font-size:0.8rem"><span>${name}</span><span style="color:var(--ch-green)">${ov}%</span></div><div class="detail-view" id="det-${safeId}">${sequentialHTML}</div></div>`;
+                    const ov = getOverall(name), safeId = name.replace(/\s/g, ''); let seqHTML = "";
+                    Object.keys(SYLLABUS).forEach(pk => { SYLLABUS[pk].sections.forEach(s => s.chapters.forEach(ch => {
+                        const chP = getChProgress(name, pk, ch.name);
+                        seqHTML += `<div class="comp-item" style="border-left-color:${SYLLABUS[pk].color}"><div class="comp-label">${SYLLABUS[pk].title}</div><div style="display:flex; justify-content:space-between; font-size:0.75rem"><span>${ch.name}</span><span>${chP}%</span></div><div class="comp-bar-bg"><div style="height:100%; width:${chP}%; background:${SYLLABUS[pk].color}"></div></div></div>`;
+                    }));});
+                    vp.innerHTML += `<div class="rank-card" onclick="const d=document.getElementById('det-${safeId}'); d.style.display=(d.style.display==='flex'?'none':'flex')"><div style="display:flex; justify-content:space-between; font-family:'Orbitron'; font-size:0.8rem"><span>${name}</span><span style="color:var(--ch-green)">${ov}%</span></div><div class="detail-view" id="det-${safeId}">${seqHTML}</div></div>`;
                 });
             } else if (vid === 'attendance') {
-                const now = new Date();
-                const launchDate = new Date(2026, 3, 1, 4, 0, 0);
-                const isLocked = now < launchDate;
-                const studyDay = getStudyDay();
-
-                let html = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">SQUAD ACTIVITY LOG</h2>`;
-                
-                if (isLocked) {
-                    html += `
-                    <div class="lock-container">
-                        <div class="lock-icon">🔒</div>
-                        <h3 style="color:var(--p1-red); font-family:'Orbitron'; margin:0;">VACATION TIME</h3>
-                        <p id="reset-timer" style="font-size: 0.8rem; color:var(--topic-white); margin-top:10px; font-family:'Orbitron';">CALCULATING LAUNCH...</p>
-                        <p style="font-size: 0.65rem; color:#666; margin-top:5px;">SYSTEM OPENS: 01 APRIL | 04:00 AM</p>
-                    </div>`;
-                } else {
-                    html += `
-                    <div style="background:var(--card-bg); border:1px solid #333; padding:20px; border-radius:15px; margin-bottom:20px; text-align:center;">
-                        <p id="reset-timer" style="font-size: 0.75rem; color:var(--p2-orange); margin-bottom: 10px; font-family: 'Orbitron';">CALCULATING RESET...</p>
-                        <button id="checkin-btn" onclick="markAttendance()" style="width:100%; padding:15px; background:var(--p3-cyan); color:#000; border:none; border-radius:8px; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">INITIALIZE DAILY SESSION</button>
-                    </div>`;
-                }
-
-                vp.innerHTML = html;
-                updateCountdown();
-                countdownTimer = setInterval(updateCountdown, 1000);
-
+                const now = new Date(), launchDate = new Date(2026, 3, 1, 4, 0, 0), isLocked = now < launchDate, studyDay = getStudyDay();
+                vp.innerHTML = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">SQUAD ACTIVITY LOG</h2>`;
+                if (isLocked) vp.innerHTML += `<div class="lock-container"><h3 style="color:var(--p1-red); font-family:'Orbitron';">VACATION TIME</h3><p id="reset-timer" style="font-size: 0.8rem; color:white;">---</p></div>`;
+                else vp.innerHTML += `<div style="background:var(--card-bg); border:1px solid #333; padding:20px; border-radius:15px; margin-bottom:20px; text-align:center;"><p id="reset-timer" style="font-size: 0.75rem; color:var(--p2-orange); font-family:'Orbitron';">---</p><button onclick="markAttendance()" style="width:100%; padding:15px; background:var(--p3-cyan); border:none; border-radius:8px; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">INITIALIZE DAILY SESSION</button></div>`;
+                updateCountdown(); countdownTimer = setInterval(updateCountdown, 1000);
                 Object.values(AGENTS).forEach(name => {
-                    const logs = db[name].logs || [];
-                    const active = logs.includes(studyDay);
-                    vp.innerHTML += `
-                    <div class="node-card" style="border-left: 4px solid ${active?'var(--ch-green)':'#444'}">
-                        <span class="node-status" style="background:${active?'rgba(57,255,20,0.1)':'#111'}; color:${active?'var(--ch-green)':'#444'}">${active?'ONLINE':'OFFLINE'}</span>
-                        <div style="font-family:'Orbitron'; font-size:0.9rem;">${name}</div>
-                        <div style="font-size:0.75rem; color:#888;">STREAK: ${logs.length} DAYS</div>
-                        <div class="node-hash">CYCLE_LOG: ${studyDay}</div>
-                    </div>`;
+                    const logs = db[name].logs || [], act = logs.includes(studyDay);
+                    vp.innerHTML += `<div class="node-card" style="border-left: 4px solid ${act?'var(--ch-green)':'#444'}"><span class="node-status" style="background:${act?'rgba(57,255,20,0.1)':'#111'}; color:${act?'var(--ch-green)':'#444'}">${act?'ONLINE':'OFFLINE'}</span><div style="font-family:'Orbitron'; font-size:0.9rem;">${name}</div><div style="font-size:0.75rem; color:#888;">STREAK: ${logs.length} DAYS</div></div>`;
                 });
             } else {
                 const data = SYLLABUS[vid]; 
-                vp.innerHTML = `<h1 style="color:${data.color}; font-family:'Orbitron'; font-size:1.4rem; margin:0">${data.title}</h1> <p style="color:#666; font-family:'Orbitron'; font-size:0.75rem; margin-top:5px; margin-bottom:20px">${data.subName}</p>`;
+                vp.innerHTML = `<h1 style="color:${data.color}; font-family:'Orbitron'; font-size:1.4rem; margin:0">${data.title}</h1><p style="color:#666; font-family:'Orbitron'; font-size:0.75rem;">${data.subName}</p>`;
                 data.sections.forEach(sec => {
                     vp.innerHTML += `<div style="background:var(--section-yellow); color:#000; padding:8px 12px; margin:15px 0; font-family:'Orbitron'; border-radius:4px; font-size:0.75rem; font-weight:bold">${sec.name}</div>`;
                     sec.chapters.forEach(ch => {
-                        const safeCh = ch.name.replace(/\s/g, '');
-                        const isDone = getChProgress(activeAgent, vid, ch.name) === 100;
-                        let h = `<div class="ch-card"><div class="ch-head"><span>${ch.name}</span><button class="upload-btn" id="up-${vid}-${safeCh}" onclick="archiveChapter('${vid}','${ch.name}')" style="display:${isDone?'block':'none'}">ARCHIVE NOTES</button></div><div class="topic-body">`;
-                        ch.topics.forEach(t => { const k = vid+ch.name+t; const c = db[activeAgent][k]?'checked':''; h += `<div class="topic-row"><input type="checkbox" onchange="toggleTopic('${k}', '${vid}', '${ch.name}')" ${c} style="accent-color:${data.color}"><span>${t}</span></div>`; });
+                        const isDone = getChProgress(activeAgent, vid, ch.name) === 100, isLocked = db[activeAgent][vid + ch.name + "_archived"];
+                        let h = `<div class="ch-card"><div class="ch-head"><span>${ch.name}</span>`;
+                        if (isLocked) h += `<div class="lock-btn-fixed" onclick="unlockChapter('${vid}','${ch.name}')">LOCKED 🔒</div>`;
+                        else if (isDone) h += `<button class="upload-btn" onclick="archiveChapter('${vid}','${ch.name}')">ARCHIVE NOTES</button>`;
+                        h += `</div><div class="topic-body">`;
+                        ch.topics.forEach(t => { const k = vid+ch.name+t, c = db[activeAgent][k]?'checked':''; h += `<div class="topic-row"><input type="checkbox" onchange="toggleTopic('${k}', '${vid}', '${ch.name}')" ${c} ${isLocked?'disabled':''} style="accent-color:${data.color}"><span>${t}</span></div>`; });
                         vp.innerHTML += h + `</div></div>`;
                     });
                 });
