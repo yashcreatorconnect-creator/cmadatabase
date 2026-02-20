@@ -26,7 +26,6 @@
         #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1a0000 0%, #000 100%); }
         .auth-card { background: var(--card-bg); padding: 30px; border: 1px solid var(--p1-red); border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 30px rgba(255, 0, 0, 0.2); }
         
-        /* New Password Wrapper with Enter Arrow */
         .pass-input-wrapper { position: relative; display: flex; align-items: center; border-bottom: 2px solid var(--p1-red); margin-top: 20px; }
         input[type="password"] { background: transparent; border: none; color: var(--p1-red); font-family: 'Orbitron'; font-size: 1.2rem; padding: 10px; width: 100%; text-align: center; outline: none; }
         .login-arrow { background: none; border: none; color: var(--p1-red); font-size: 1.5rem; cursor: pointer; padding: 0 10px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
@@ -46,7 +45,6 @@
         .nav-link { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.8rem; border-left: 4px solid transparent; opacity: 0.6; }
         .nav-link.active { border-left-color: var(--p3-cyan); background: rgba(0, 255, 255, 0.1); opacity: 1; }
 
-        /* Added heavy padding to content to ensure footer doesn't overlap */
         .content { overflow-y: auto; padding: 20px 20px 100px 20px; -webkit-overflow-scrolling: touch; flex: 1; position: relative; }
         
         .chart-container { background: rgba(255,255,255,0.02); border: 1px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 30px; position: relative; height: 250px; display: flex; align-items: flex-end; justify-content: space-around; }
@@ -77,7 +75,6 @@
 
         .upload-btn { background: var(--p3-cyan); color: #000; padding: 4px 8px; border-radius: 4px; font-size: 0.6rem; font-family: 'Orbitron'; cursor: pointer; display: none; font-weight: bold; border: none; }
 
-        /* Fixed Footer Fix */
         .footer { 
             background: rgba(0, 0, 0, 0.95); 
             border-top: 1px solid rgba(255, 255, 255, 0.1); 
@@ -93,6 +90,13 @@
             margin-top: auto;
         }
         .footer span { color: var(--p3-cyan); text-shadow: 0 0 5px var(--p3-cyan); }
+
+        .node-card { background: rgba(255,255,255,0.02); border: 1px solid #222; padding: 15px; border-radius: 10px; margin-bottom: 10px; position: relative; overflow: hidden; }
+        .node-hash { font-family: 'Orbitron'; font-size: 0.5rem; color: #444; margin-top: 5px; word-break: break-all; }
+        .node-status { float: right; font-family: 'Orbitron'; font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; }
+        
+        .lock-container { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 0, 0, 0.05); border: 1px dashed var(--p1-red); border-radius: 15px; padding: 40px 20px; text-align: center; margin-bottom: 20px; }
+        .lock-icon { font-size: 3rem; margin-bottom: 15px; color: var(--p1-red); text-shadow: 0 0 10px var(--p1-red); }
     </style>
 </head>
 <body>
@@ -114,6 +118,7 @@
             </div>
             <nav id="sidebar-nav" class="nav-container">
                 <div class="nav-link active" onclick="showView('home', this)">SQUAD HUB</div>
+                <div class="nav-link" onclick="showView('attendance', this)">ATTDENCE LAGAO</div>
                 <div class="nav-link" onclick="showView('p1', this)">P1: LAWS</div>
                 <div class="nav-link" onclick="showView('p2', this)">P2: ACCOUNTS</div>
                 <div class="nav-link" onclick="showView('p3', this)">P3: MATH</div>
@@ -132,7 +137,6 @@
         const API_URL = "https://sheetdb.io/api/v1/oj0l2zb1m9qnd";
         const DRIVE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwB1dGM26Vsxo9hYoqZPyRJZ_7QY4fPOm4b-qrZKLfMT3QEoDVEmpbySlQMueOyGICqzw/exec";
         
-        // Arranged: Yash Raj first, then Tanay Singh, then Prem Murmu
         const AGENTS = { "rajyash": "Yash Raj", "singhtanay": "Tanay Singh", "murmuprem": "Prem Murmu" };
         
         const SYLLABUS = {
@@ -156,6 +160,39 @@
 
         let activeAgent = "";
         let db = { "Tanay Singh": {}, "Prem Murmu": {}, "Yash Raj": {} };
+        let countdownTimer;
+
+        function getStudyDay() {
+            const now = new Date();
+            if (now.getHours() < 4) now.setDate(now.getDate() - 1);
+            return now.toLocaleDateString('en-GB');
+        }
+
+        function updateCountdown() {
+            const el = document.getElementById('reset-timer');
+            if (!el) return;
+            const now = new Date();
+            const launchDate = new Date(2026, 3, 1, 4, 0, 0); 
+
+            if (now < launchDate) {
+                const diff = launchDate - now;
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                el.innerText = `OPENING IN: ${d}D ${h}H ${m}M ${s}S`;
+                return;
+            }
+
+            let target = new Date();
+            target.setHours(4, 0, 0, 0);
+            if (now.getHours() >= 4) target.setDate(target.getDate() + 1);
+            const diff = target - now;
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            el.innerText = `RESET IN: ${h}H ${m}M ${s}S`;
+        }
 
         async function verify() {
             const val = document.getElementById('passCode').value;
@@ -170,7 +207,25 @@
         }
 
         async function fetchCloudData() {
-            try { const res = await fetch(API_URL); const data = await res.json(); data.forEach(row => { if (row.progress_data && row.progress_data !== "{}") db[row.agent_name] = JSON.parse(row.progress_data); }); } catch (e) {}
+            try { 
+                const res = await fetch(API_URL); 
+                const data = await res.json(); 
+                data.forEach(async row => { 
+                    if (row.progress_data && row.progress_data !== "{}") {
+                        let parsed = JSON.parse(row.progress_data);
+                        // Reset Logic: If logs exist, clear them and sync back to DB once
+                        if (parsed.logs && parsed.logs.length > 0) {
+                            parsed.logs = []; 
+                            await fetch(`${API_URL}/agent_name/${row.agent_name}`, { 
+                                method: 'PATCH', 
+                                headers: {'Content-Type': 'application/json'}, 
+                                body: JSON.stringify({ "progress_data": JSON.stringify(parsed) }) 
+                            });
+                        }
+                        db[row.agent_name] = parsed;
+                    } 
+                }); 
+            } catch (e) {}
         }
 
         async function toggleTopic(key, paperKey, chName) {
@@ -178,6 +233,22 @@
             document.getElementById('overall-prog').innerText = "MISSION: " + getOverall(activeAgent) + "%";
             await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
             checkArchiveAvailability(paperKey, chName);
+        }
+
+        async function markAttendance() {
+            const now = new Date();
+            const launchDate = new Date(2026, 3, 1, 4, 0, 0);
+            if (now < launchDate) return alert("SYSTEM LOCKED: VACATION PERIOD ACTIVE.");
+
+            const studyDay = getStudyDay();
+            if(!db[activeAgent].logs) db[activeAgent].logs = [];
+            if(db[activeAgent].logs.includes(studyDay)) return alert("SESSION ALREADY LOGGED FOR THIS CYCLE.");
+            
+            db[activeAgent].logs.push(studyDay);
+            const btn = document.getElementById('checkin-btn');
+            btn.innerText = "SYNCING...";
+            await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
+            showView('attendance');
         }
 
         function checkArchiveAvailability(pk, chName) {
@@ -213,35 +284,26 @@
         function getOverall(n) { return Math.round((['p1','p2','p3','p4'].reduce((a,p) => a + getProgress(n,p), 0))/4); }
 
         function showView(vid, el) {
+            clearInterval(countdownTimer);
             const vp = document.getElementById('viewport'); vp.innerHTML = "";
             document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
             if(el) el.classList.add('active');
 
             if (vid === 'home') {
                 vp.innerHTML = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">SQUAD ANALYTICS</h2>`;
-                
                 let chartHTML = `<div class="chart-container"><div class="y-axis"><span>100%</span><span>50%</span><span>0%</span></div>`;
                 Object.values(AGENTS).forEach(name => {
                     const ov = getOverall(name);
                     chartHTML += `<div class="bar-wrapper"><span class="bar-val">${ov}%</span><div class="bar-pillar" style="height:${ov * 1.5}px"></div><span class="bar-label">${name.split(' ')[0]}</span></div>`;
                 });
                 chartHTML += `</div>`;
-                
                 let pieHTML = `<div class="pie-scroll-container">`;
                 Object.values(AGENTS).forEach(name => {
                     const p1 = getProgress(name,'p1'), p2 = getProgress(name,'p2'), p3 = getProgress(name,'p3'), p4 = getProgress(name,'p4'), ov = getOverall(name);
-                    pieHTML += `
-                        <div class="pie-card">
-                            <div class="multi-pie" style="background: conic-gradient(var(--p1-red) 0% ${p1*0.25}%, #222 ${p1*0.25}% 25%, var(--p2-orange) 25% ${25+p2*0.25}%, #222 ${25+p2*0.25}% 50%, var(--p3-cyan) 50% ${50+p3*0.25}%, #222 ${50+p3*0.25}% 75%, var(--p4-purple) 75% ${75+p4*0.25}%, #222 ${75+p4*0.25}% 100%)">
-                                <div class="pie-val">${ov}%</div>
-                            </div>
-                            <div class="pie-label">${name.split(' ')[0]}</div>
-                        </div>`;
+                    pieHTML += `<div class="pie-card"><div class="multi-pie" style="background: conic-gradient(var(--p1-red) 0% ${p1*0.25}%, #222 ${p1*0.25}% 25%, var(--p2-orange) 25% ${25+p2*0.25}%, #222 ${25+p2*0.25}% 50%, var(--p3-cyan) 50% ${50+p3*0.25}%, #222 ${50+p3*0.25}% 75%, var(--p4-purple) 75% ${75+p4*0.25}%, #222 ${75+p4*0.25}% 100%)"><div class="pie-val">${ov}%</div></div><div class="pie-label">${name.split(' ')[0]}</div></div>`;
                 });
                 pieHTML += `</div>`;
-                
                 vp.innerHTML += chartHTML + pieHTML;
-
                 Object.values(AGENTS).forEach(name => {
                     const ov = getOverall(name);
                     const safeId = name.replace(/\s/g, '');
@@ -254,6 +316,45 @@
                         }));
                     });
                     vp.innerHTML += `<div class="rank-card" onclick="const d=document.getElementById('det-${safeId}'); d.style.display=(d.style.display==='flex'?'none':'flex')"><div style="display:flex; justify-content:space-between; font-family:'Orbitron'; font-size:0.8rem"><span>${name}</span><span style="color:var(--ch-green)">${ov}%</span></div><div class="detail-view" id="det-${safeId}">${sequentialHTML}</div></div>`;
+                });
+            } else if (vid === 'attendance') {
+                const now = new Date();
+                const launchDate = new Date(2026, 3, 1, 4, 0, 0);
+                const isLocked = now < launchDate;
+                const studyDay = getStudyDay();
+
+                let html = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">SQUAD ACTIVITY LOG</h2>`;
+                
+                if (isLocked) {
+                    html += `
+                    <div class="lock-container">
+                        <div class="lock-icon">🔒</div>
+                        <h3 style="color:var(--p1-red); font-family:'Orbitron'; margin:0;">VACATION TIME</h3>
+                        <p id="reset-timer" style="font-size: 0.8rem; color:var(--topic-white); margin-top:10px; font-family:'Orbitron';">CALCULATING LAUNCH...</p>
+                        <p style="font-size: 0.65rem; color:#666; margin-top:5px;">SYSTEM OPENS: 01 APRIL | 04:00 AM</p>
+                    </div>`;
+                } else {
+                    html += `
+                    <div style="background:var(--card-bg); border:1px solid #333; padding:20px; border-radius:15px; margin-bottom:20px; text-align:center;">
+                        <p id="reset-timer" style="font-size: 0.75rem; color:var(--p2-orange); margin-bottom: 10px; font-family: 'Orbitron';">CALCULATING RESET...</p>
+                        <button id="checkin-btn" onclick="markAttendance()" style="width:100%; padding:15px; background:var(--p3-cyan); color:#000; border:none; border-radius:8px; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">INITIALIZE DAILY SESSION</button>
+                    </div>`;
+                }
+
+                vp.innerHTML = html;
+                updateCountdown();
+                countdownTimer = setInterval(updateCountdown, 1000);
+
+                Object.values(AGENTS).forEach(name => {
+                    const logs = db[name].logs || [];
+                    const active = logs.includes(studyDay);
+                    vp.innerHTML += `
+                    <div class="node-card" style="border-left: 4px solid ${active?'var(--ch-green)':'#444'}">
+                        <span class="node-status" style="background:${active?'rgba(57,255,20,0.1)':'#111'}; color:${active?'var(--ch-green)':'#444'}">${active?'ONLINE':'OFFLINE'}</span>
+                        <div style="font-family:'Orbitron'; font-size:0.9rem;">${name}</div>
+                        <div style="font-size:0.75rem; color:#888;">STREAK: ${logs.length} DAYS</div>
+                        <div class="node-hash">CYCLE_LOG: ${studyDay}</div>
+                    </div>`;
                 });
             } else {
                 const data = SYLLABUS[vid]; 
