@@ -1,288 +1,918 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CMA FOUNDATION | SQUAD INTEL PRO</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --p1-red: #ff0000; --p2-orange: #ff8c00; --p3-cyan: #00ffff; --p4-purple: #9d50bb;
-            --section-yellow: #ffff00; --ch-green: #39ff14; --topic-white: #ffffff;
-            --bg-dark: #050505; --card-bg: rgba(15, 15, 20, 0.95);
-        }
-        * { box-sizing: border-box; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg-dark); color: var(--topic-white); font-family: 'Rajdhani', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>CMA FOUNDATION | SQUAD INTEL PRO</title>
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --p1-red: #ff0000;
+                --p2-orange: #ff8c00;
+                --p3-cyan: #00ffff;
+                --p4-purple: #9d50bb;
+                --section-yellow: #ffff00;
+                --ch-green: #39ff14;
+                --topic-white: #ffffff;
+                --bg-dark: #050505;
+                --card-bg: rgba(15, 15, 20, 0.95);
+            }
+
+            * {
+                box-sizing: border-box;
+                transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            body {
+                background: var(--bg-dark);
+                color: var(--topic-white);
+                font-family: 'Rajdhani', sans-serif;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            #login-screen {
+                position: fixed;
+                inset: 0;
+                z-index: 1000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: radial-gradient(circle, #1a0000 0%, #000 100%);
+            }
+
+            .auth-card {
+                background: var(--card-bg);
+                padding: 30px;
+                border: 1px solid var(--p1-red);
+                border-radius: 20px;
+                text-align: center;
+                width: 90%;
+                max-width: 400px;
+                box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
+            }
+
+            .logo-box {
+                position: relative;
+                width: 100px;
+                height: 100px;
+                margin: 0 auto 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .logo-img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                animation: breathing 3s ease-in-out infinite;
+            }
+
+            .sidebar-logo-container {
+                text-align: center;
+                padding-bottom: 10px;
+                border-bottom: 1px solid rgba(255,255,255,0.05);
+                margin-bottom: 15px;
+            }
+
+            .sidebar-logo {
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                animation: orbitGlow 4s ease-in-out infinite;
+                filter: drop-shadow(0 0 5px var(--p3-cyan));
+            }
+
+            #loading-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.9);
+                z-index: 9999;
+                display: none;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                backdrop-filter: blur(10px);
+            }
+
+            .loader-logo {
+                width: 80px;
+                height: 80px;
+                animation: breathing 1.5s infinite;
+            }
+
+            @keyframes breathing {
+                0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--p1-red)); }
+                50% { transform: scale(1.05); filter: drop-shadow(0 0 15px var(--p1-red)); }
+            }
+
+            @keyframes orbitGlow {
+                0%, 100% { filter: drop-shadow(0 0 5px var(--p3-cyan)); border-color: var(--p3-cyan); }
+                50% { filter: drop-shadow(0 0 12px var(--ch-green)); border-color: var(--ch-green); }
+            }
+
+            .pass-input-wrapper {
+                position: relative;
+                display: flex;
+                align-items: center;
+                border-bottom: 2px solid var(--p1-red);
+                margin-top: 20px;
+            }
+
+            input[type="password"] {
+                background: transparent;
+                border: none;
+                color: var(--p1-red);
+                font-family: 'Orbitron';
+                font-size: 1.2rem;
+                padding: 10px;
+                width: 100%;
+                text-align: center;
+                outline: none;
+            }
+
+            .login-arrow {
+                background: none;
+                border: none;
+                color: var(--p1-red);
+                font-size: 1.5rem;
+                cursor: pointer;
+                padding: 0 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: 0.2s;
+            }
+
+            .login-arrow:hover { transform: translateX(5px); text-shadow: 0 0 10px var(--p1-red); }
+
+            #main-terminal {
+                display: none;
+                flex: 1;
+                grid-template-columns: 1fr;
+                overflow: hidden;
+            }
+
+            @media (min-width: 768px) { #main-terminal { grid-template-columns: 280px 1fr; } }
+
+            .sidebar {
+                background: #0a0a0c;
+                border-right: 1px solid rgba(255,255,255,0.05);
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+            }
+
+            @media (max-width: 767px) {
+                .sidebar { height: auto; border-right: none; border-bottom: 1px solid #333; padding: 15px; }
+                .sidebar-logo-container { display: none; }
+                #main-terminal { grid-template-rows: auto 1fr; }
+                .nav-container { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 5px; scrollbar-width: none; }
+                .nav-link { min-width: 140px; margin-bottom: 0 !important; font-size: 0.7rem !important; }
+            }
+
+            .nav-link {
+                padding: 12px;
+                margin-bottom: 8px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-family: 'Orbitron';
+                font-size: 0.8rem;
+                border-left: 4px solid transparent;
+                opacity: 0.6;
+            }
+
+            .nav-link.active { border-left-color: var(--p3-cyan); background: rgba(0, 255, 255, 0.1); opacity: 1; }
+
+            .content { overflow-y: auto; padding: 20px 20px 100px 20px; flex: 1; position: relative; }
+
+            /* Showcase / Feed Styles */
+            .showcase-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+
+            @media (max-width: 1024px) {
+                .showcase-grid { grid-template-columns: 1fr; }
+            }
+
+            .agent-col {
+                background: rgba(255,255,255,0.02);
+                border: 1px solid #333;
+                border-radius: 12px;
+                padding: 15px;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .agent-col h3 {
+                text-align: center;
+                color: var(--p3-cyan);
+                font-family: 'Orbitron';
+                margin: 0 0 10px 0;
+                border-bottom: 1px solid #333;
+                padding-bottom: 10px;
+            }
+
+            .date-card {
+                background: #111;
+                border: 1px solid #333;
+                border-radius: 8px;
+                padding: 12px;
+                cursor: pointer;
+                font-family: 'Orbitron';
+                color: #ccc;
+                text-align: center;
+                font-size: 1rem;
+                transition: 0.2s;
+            }
+            .date-card:hover {
+                border-color: var(--p3-cyan);
+                color: var(--p3-cyan);
+                background: rgba(0, 255, 255, 0.05);
+            }
+
+            .post-card {
+                background: #0a0a0c;
+                border: 1px solid #222;
+                border-radius: 8px;
+                padding: 15px;
+                margin-top: 5px;
+                margin-bottom: 15px;
+            }
+
+            .post-title {
+                font-size: 1.1rem;
+                color: #fff;
+                margin: 0 0 8px 0;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+            .post-desc {
+                font-size: 0.85rem;
+                color: #aaa;
+                line-height: 1.4;
+                margin-bottom: 12px;
+            }
+
+            .post-img-container {
+                display: flex;
+                gap: 10px;
+                overflow-x: auto;
+                scrollbar-width: thin;
+                padding-bottom: 5px;
+            }
+
+            .post-img {
+                height: 120px;
+                border-radius: 5px;
+                border: 1px solid #333;
+                object-fit: cover;
+                cursor: pointer;
+            }
+
+            .upload-btn-main {
+                width: 100%;
+                padding: 12px;
+                background: rgba(0, 255, 255, 0.1);
+                color: var(--p3-cyan);
+                border: 1px dashed var(--p3-cyan);
+                border-radius: 8px;
+                font-family: 'Orbitron';
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 0.9rem;
+            }
+            
+            .upload-btn-main:hover { background: var(--p3-cyan); color: #000; }
+
+            /* Modal Styles */
+            .modal-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.85);
+                z-index: 2000;
+                display: none;
+                justify-content: center;
+                align-items: center;
+                backdrop-filter: blur(5px);
+            }
+
+            .modal-content {
+                background: var(--card-bg);
+                padding: 25px;
+                border-radius: 12px;
+                border: 1px solid var(--p3-cyan);
+                width: 90%;
+                max-width: 450px;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                box-shadow: 0 0 30px rgba(0, 255, 255, 0.1);
+            }
+
+            .modal-content input, .modal-content textarea {
+                background: #0a0a0c;
+                border: 1px solid #333;
+                color: #fff;
+                padding: 12px;
+                font-family: 'Rajdhani';
+                border-radius: 6px;
+                outline: none;
+                font-size: 1rem;
+            }
+
+            .modal-content input[type="date"] { font-family: 'Orbitron'; color: var(--p2-orange); }
+            .modal-content input:focus, .modal-content textarea:focus { border-color: var(--p3-cyan); }
+
+            .modal-actions { display: flex; gap: 15px; margin-top: 10px; }
+            .modal-actions button {
+                flex: 1; padding: 12px; border: none; border-radius: 6px; font-family: 'Orbitron'; cursor: pointer; font-weight: bold; font-size: 0.9rem;
+            }
+
+            .btn-cancel { background: #222; color: #aaa; border: 1px solid #444 !important; }
+            .btn-publish { background: var(--p3-cyan); color: #000; }
+
+            /* Shared Styles */
+            .chart-container { background: rgba(255,255,255,0.02); border: 1px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 30px; position: relative; height: 250px; display: flex; align-items: flex-end; justify-content: space-around; }
+            .y-axis { position: absolute; left: 10px; height: 75%; border-left: 1px solid #444; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.6rem; color: #666; padding-left: 5px; }
+            .bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 25%; position: relative; z-index: 5; }
+            .bar-pillar { width: 30px; background: linear-gradient(0deg, #111 0%, var(--ch-green) 100%); border-radius: 4px 4px 0 0; min-height: 2px; transition: height 1s ease; }
+            .bar-val { font-family: 'Orbitron'; font-size: 0.7rem; margin-bottom: 5px; color: var(--ch-green); }
+            .bar-label { font-family: 'Orbitron'; font-size: 0.6rem; margin-top: 10px; color: #888; text-align: center; }
+            .pie-scroll-container { display: flex; overflow-x: auto; gap: 20px; padding: 20px 0; scrollbar-width: none; margin-bottom: 30px; border-bottom: 1px solid #222; }
+            .pie-card { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; width: 120px; }
+            .multi-pie { width: 80px; height: 80px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
+            .multi-pie::after { content: ""; position: absolute; width: 60px; height: 60px; background: #050505; border-radius: 50%; z-index: 2; }
+            .pie-val { position: relative; z-index: 3; font-family: 'Orbitron'; font-size: 0.8rem; color: #fff; }
+            .pie-label { font-size: 0.7rem; margin-top: 10px; font-family: 'Orbitron'; opacity: 0.7; }
+            .comp-item { background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border-left: 4px solid transparent; margin-bottom: 8px; }
+            .comp-label { font-size: 0.6rem; font-family: 'Orbitron'; opacity: 0.5; margin-bottom: 4px; }
+            .comp-bar-bg { height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
+            .rank-card { background: #111; padding: 15px; border-radius: 12px; margin-bottom: 12px; cursor: pointer; border: 1px solid #222; }
+            .detail-view { display: none; flex-direction: column; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 8px; margin-top: 10px; }
+            .ch-card { background: rgba(255,255,255,0.02); border: 1px solid var(--ch-green); margin-bottom: 15px; border-radius: 10px; overflow: hidden; }
+            .ch-head { padding: 12px 15px; background: rgba(57, 255, 20, 0.05); color: var(--ch-green); font-family: 'Orbitron'; font-size: 0.85rem; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+            .topic-row { padding: 10px 15px; display: flex; align-items: center; border-bottom: 1px solid #222; font-size: 0.9rem; }
+            .is-subtopic { padding-left: 35px; font-size: 0.8rem; color: #ccc; border-bottom: 1px dashed #222; }
+            input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; accent-color: var(--p3-cyan); flex-shrink: 0; cursor: pointer; }
+            .footer { background: rgba(0, 0, 0, 0.95); border-top: 1px solid rgba(255, 255, 255, 0.1); padding: 15px 10px; text-align: center; font-family: 'Orbitron', sans-serif !important; font-size: 0.65rem; color: rgba(255, 255, 255, 0.5); width: 100%; flex-shrink: 0; position: relative; z-index: 10; }
+            .footer span { color: var(--p3-cyan); text-shadow: 0 0 5px var(--p3-cyan); }
+            .node-card { background: rgba(255,255,255,0.02); border: 1px solid #222; padding: 15px; border-radius: 10px; margin-bottom: 10px; position: relative; overflow: hidden; }
+            .node-status { float: right; font-family: 'Orbitron'; font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; }
+            .lock-container { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 0, 0, 0.05); border: 1px dashed var(--p1-red); border-radius: 15px; padding: 40px 20px; text-align: center; margin-bottom: 20px; }
+        </style>
+    </head>
+    <body>
+        <div id="loading-overlay">
+            <img src="assets/server-icon.png" class="loader-logo" alt="Loading">
+        </div>
         
-        #login-screen { position: fixed; inset: 0; z-index: 1000; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1a0000 0%, #000 100%); }
-        .auth-card { background: var(--card-bg); padding: 30px; border: 1px solid var(--p1-red); border-radius: 20px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 0 30px rgba(255, 0, 0, 0.2); }
-        
-        /* Logo Styles */
-        .logo-box { position: relative; width: 100px; height: 100px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; }
-        .logo-img { width: 100%; height: 100%; object-fit: contain; animation: breathing 3s ease-in-out infinite; }
-        .sidebar-logo-container { text-align: center; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 15px; }
-        .sidebar-logo { width: 45px; height: 45px; border-radius: 50%; animation: orbitGlow 4s ease-in-out infinite; filter: drop-shadow(0 0 5px var(--p3-cyan)); }
-
-        /* Loading Screen */
-        #loading-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
-        .loader-logo { width: 80px; height: 80px; animation: breathing 1.5s infinite; }
-
-        @keyframes breathing { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--p1-red)); } 50% { transform: scale(1.05); filter: drop-shadow(0 0 15px var(--p1-red)); } }
-        @keyframes orbitGlow { 0%, 100% { filter: drop-shadow(0 0 5px var(--p3-cyan)); border-color: var(--p3-cyan); } 50% { filter: drop-shadow(0 0 12px var(--ch-green)); border-color: var(--ch-green); } }
-
-        .pass-input-wrapper { position: relative; display: flex; align-items: center; border-bottom: 2px solid var(--p1-red); margin-top: 20px; }
-        input[type="password"] { background: transparent; border: none; color: var(--p1-red); font-family: 'Orbitron'; font-size: 1.2rem; padding: 10px; width: 100%; text-align: center; outline: none; }
-        .login-arrow { background: none; border: none; color: var(--p1-red); font-size: 1.5rem; cursor: pointer; padding: 0 10px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .login-arrow:hover { transform: translateX(5px); text-shadow: 0 0 10px var(--p1-red); }
-
-        #main-terminal { display: none; flex: 1; grid-template-columns: 1fr; overflow: hidden; }
-        @media (min-width: 768px) { #main-terminal { grid-template-columns: 280px 1fr; } }
-
-        .sidebar { background: #0a0a0c; border-right: 1px solid rgba(255,255,255,0.05); padding: 20px; display: flex; flex-direction: column; overflow-y: auto; }
-        @media (max-width: 767px) { 
-            .sidebar { height: auto; border-right: none; border-bottom: 1px solid #333; padding: 15px; } 
-            .sidebar-logo-container { display: none; } 
-            #main-terminal { grid-template-rows: auto 1fr; } 
-            .nav-container { display: flex; overflow-x: auto; gap: 10px; padding-bottom: 5px; scrollbar-width: none; } 
-            .nav-link { min-width: 140px; margin-bottom: 0 !important; font-size: 0.7rem !important; } 
-        }
-
-        .nav-link { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.8rem; border-left: 4px solid transparent; opacity: 0.6; }
-        .nav-link.active { border-left-color: var(--p3-cyan); background: rgba(0, 255, 255, 0.1); opacity: 1; }
-        .content { overflow-y: auto; padding: 20px 20px 100px 20px; flex: 1; position: relative; }
-        
-        .chart-container { background: rgba(255,255,255,0.02); border: 1px solid #222; border-radius: 15px; padding: 20px; margin-bottom: 30px; position: relative; height: 250px; display: flex; align-items: flex-end; justify-content: space-around; }
-        .y-axis { position: absolute; left: 10px; height: 75%; border-left: 1px solid #444; display: flex; flex-direction: column; justify-content: space-between; font-size: 0.6rem; color: #666; padding-left: 5px; }
-        .bar-wrapper { display: flex; flex-direction: column; align-items: center; width: 25%; position: relative; z-index: 5; }
-        .bar-pillar { width: 30px; background: linear-gradient(0deg, #111 0%, var(--ch-green) 100%); border-radius: 4px 4px 0 0; min-height: 2px; transition: height 1s ease; }
-        .bar-val { font-family: 'Orbitron'; font-size: 0.7rem; margin-bottom: 5px; color: var(--ch-green); }
-        .bar-label { font-family: 'Orbitron'; font-size: 0.6rem; margin-top: 10px; color: #888; text-align: center; }
-
-        .pie-scroll-container { display: flex; overflow-x: auto; gap: 20px; padding: 20px 0; scrollbar-width: none; margin-bottom: 30px; border-bottom: 1px solid #222; }
-        .pie-card { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; width: 120px; }
-        .multi-pie { width: 80px; height: 80px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
-        .multi-pie::after { content: ""; position: absolute; width: 60px; height: 60px; background: #050505; border-radius: 50%; z-index: 2; }
-        .pie-val { position: relative; z-index: 3; font-family: 'Orbitron'; font-size: 0.8rem; color: #fff; }
-        .pie-label { font-size: 0.7rem; margin-top: 10px; font-family: 'Orbitron'; opacity: 0.7; }
-
-        .comp-item { background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; border-left: 4px solid transparent; margin-bottom: 8px; }
-        .comp-label { font-size: 0.6rem; font-family: 'Orbitron'; opacity: 0.5; margin-bottom: 4px; }
-        .comp-bar-bg { height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
-
-        .rank-card { background: #111; padding: 15px; border-radius: 12px; margin-bottom: 12px; cursor: pointer; border: 1px solid #222; }
-        .detail-view { display: none; flex-direction: column; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 8px; margin-top: 10px; }
-        
-        .ch-card { background: rgba(255,255,255,0.02); border: 1px solid var(--ch-green); margin-bottom: 15px; border-radius: 10px; overflow: hidden; }
-        .ch-head { padding: 12px 15px; background: rgba(57, 255, 20, 0.05); color: var(--ch-green); font-family: 'Orbitron'; font-size: 0.85rem; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .topic-row { padding: 10px 15px; display: flex; align-items: center; border-bottom: 1px solid #222; font-size: 0.9rem; }
-        input[type="checkbox"] { width: 22px; height: 22px; margin-right: 15px; accent-color: var(--p3-cyan); flex-shrink: 0; cursor: pointer; }
-
-        .upload-btn { background: var(--p3-cyan); color: #000; padding: 4px 8px; border-radius: 4px; font-size: 0.6rem; font-family: 'Orbitron'; cursor: pointer; font-weight: bold; border: none; }
-        .lock-btn-fixed { background: rgba(255, 0, 0, 0.2); color: var(--p1-red); padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-family: 'Orbitron'; border: 1px solid var(--p1-red); cursor: pointer; display: flex; align-items: center; gap: 5px; }
-
-        /* FIXED FOOTER SYSTEM */
-        .footer { 
-            background: rgba(0, 0, 0, 0.95); 
-            border-top: 1px solid rgba(255, 255, 255, 0.1); 
-            padding: 15px 10px; 
-            text-align: center; 
-            font-family: 'Orbitron', sans-serif !important; 
-            font-size: 0.65rem; 
-            color: rgba(255, 255, 255, 0.5); 
-            width: 100%; 
-            flex-shrink: 0;
-            position: relative;
-            z-index: 10;
-        }
-        .footer span { color: var(--p3-cyan); text-shadow: 0 0 5px var(--p3-cyan); }
-
-        .node-card { background: rgba(255,255,255,0.02); border: 1px solid #222; padding: 15px; border-radius: 10px; margin-bottom: 10px; position: relative; overflow: hidden; }
-        .node-hash { font-family: 'Orbitron'; font-size: 0.5rem; color: #444; margin-top: 5px; word-break: break-all; }
-        .node-status { float: right; font-family: 'Orbitron'; font-size: 0.6rem; padding: 2px 8px; border-radius: 4px; }
-        .lock-container { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 0, 0, 0.05); border: 1px dashed var(--p1-red); border-radius: 15px; padding: 40px 20px; text-align: center; margin-bottom: 20px; }
-    </style>
-</head>
-<body>
-    <div id="loading-overlay">
-        <img src="assets/server-icon.png" class="loader-logo" alt="Loading">
-    </div>
-
-    <div id="login-screen">
-        <div class="auth-card">
-            <div class="logo-box"><img src="assets/server-icon.png" alt="SQUAD" class="logo-img"></div>
-            <h1 style="color:var(--p1-red); font-family:'Orbitron'; font-size: 1.2rem;">IDENTITY CHECK</h1>
-            <div class="pass-input-wrapper">
-                <input type="password" id="passCode" placeholder="ACCESS KEY..." onkeydown="if(event.key==='Enter') verify()">
-                <button class="login-arrow" onclick="verify()">➜</button>
+        <div id="upload-modal" class="modal-overlay">
+            <div class="modal-content">
+                <h3 style="color:var(--p3-cyan); margin:0; font-family:'Orbitron'; text-align:center;">PUBLISH TO FEED</h3>
+                <input type="file" id="post-files" accept="image/*" multiple style="color:var(--p2-orange); font-size:0.8rem;">
+                <input type="date" id="post-date">
+                <input type="text" id="post-title" placeholder="TITLE (e.g. Contract Act Notes)">
+                <textarea id="post-desc" rows="4" placeholder="DESCRIPTION..."></textarea>
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeModal()">CANCEL</button>
+                    <button class="btn-publish" onclick="publishPost()">PUBLISH</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="main-terminal">
-        <aside class="sidebar">
-            <div class="sidebar-logo-container">
-                <img src="assets/server-icon.png" class="sidebar-logo" alt="logo">
-                <div id="agent-name" style="font-family:'Orbitron'; color:var(--ch-green); font-size: 1rem;">---</div>
-                <div id="overall-prog" style="color:var(--p3-cyan); font-size:0.75rem; margin-top:5px; font-family:'Orbitron';">MISSION: 0%</div>
+        <div id="login-screen">
+            <div class="auth-card">
+                <div class="logo-box">
+                    <img src="assets/server-icon.png" alt="SQUAD" class="logo-img">
+                </div>
+                <h1 style="color:var(--p1-red); font-family:'Orbitron'; font-size: 1.2rem;">IDENTITY CHECK</h1>
+                <div class="pass-input-wrapper">
+                    <input type="password" id="passCode" placeholder="ACCESS KEY..." onkeydown="if(event.key==='Enter') verify()">
+                    <button class="login-arrow" onclick="verify()">➜</button>
+                </div>
             </div>
-            <nav id="sidebar-nav" class="nav-container">
-                <div class="nav-link active" onclick="showView('home', this)">SQUAD HUB</div>
-                <div class="nav-link" onclick="showView('attendance', this)">ATTDENCE LAGAO</div>
-                <div class="nav-link" onclick="showView('p1', this)">P1: LAWS</div>
-                <div class="nav-link" onclick="showView('p2', this)">P2: ACCOUNTS</div>
-                <div class="nav-link" onclick="showView('p3', this)">P3: MATH</div>
-                <div class="nav-link" onclick="showView('p4', this)">P4: ECON</div>
-            </nav>
-            <button onclick="location.reload()" style="margin-top:auto; background:none; border:1px solid #444; color:#666; padding:8px; border-radius:5px; cursor:pointer; font-size: 0.7rem; font-family:'Orbitron';">LOGOUT</button>
-        </aside>
-        <main class="content" id="viewport"></main>
-    </div>
+        </div>
+        
+        <div id="main-terminal">
+            <aside class="sidebar">
+                <div class="sidebar-logo-container">
+                    <img src="assets/server-icon.png" class="sidebar-logo" alt="logo">
+                    <div id="agent-name" style="font-family:'Orbitron'; color:var(--ch-green); font-size: 1rem;">---</div>
+                    <div id="overall-prog" style="color:var(--p3-cyan); font-size:0.75rem; margin-top:5px; font-family:'Orbitron';">MISSION: 0%</div>
+                </div>
+                <nav id="sidebar-nav" class="nav-container">
+                    <div class="nav-link active" onclick="showView('home', this)">SQUAD HUB</div>
+                    <div class="nav-link" onclick="showView('attendance', this)">ATTDENCE LAGAO</div>
+                    <div class="nav-link showcase-tab" onclick="showView('showcase', this)">NOTES FEED</div>
+                    <div class="nav-link" onclick="showView('p1', this)">P1: LAWS</div>
+                    <div class="nav-link" onclick="showView('p2', this)">P2: ACCOUNTS</div>
+                    <div class="nav-link" onclick="showView('p3', this)">P3: MATH</div>
+                    <div class="nav-link" onclick="showView('p4', this)">P4: ECON</div>
+                </nav>
+                <button onclick="location.reload()" style="margin-top:auto; background:none; border:1px solid #444; color:#666; padding:8px; border-radius:5px; cursor:pointer; font-size: 0.7rem; font-family:'Orbitron';">LOGOUT</button>
+            </aside>
+            <main class="content" id="viewport"></main>
+        </div>
+        
+        <footer class="footer">
+            ALL RIGHTS ARE PRIVATE <span>© NOTZIE 2026</span>
+        </footer>
 
-    <footer class="footer">ALL RIGHTS ARE PRIVATE <span>© NOTZIE 2026</span></footer>
+        <script>
+            // --- BACKEND CONNECTIONS ---
+            const API_URL = "https://sheetdb.io/api/v1/12b4sbqthvype";
+            const DRIVE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwO8mGrcCckPHuOJwQkdOmduW8ECd49S1sy46D6JHCro-pnfZ1RqXKU6s-17cQ5b8MHiA/exec";
+            
+            const AGENTS = { "rajyash": "Yash Raj", "singhtanay": "Tanay Singh", "murmuprem": "Prem Murmu" };
 
-    <script>
-        const API_URL = "https://sheetdb.io/api/v1/oj0l2zb1m9qnd";
-        const DRIVE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwB1dGM26Vsxo9hYoqZPyRJZ_7QY4fPOm4b-qrZKLfMT3QEoDVEmpbySlQMueOyGICqzw/exec";
-        const AGENTS = { "rajyash": "Yash Raj", "singhtanay": "Tanay Singh", "murmuprem": "Prem Murmu" };
-        const SYLLABUS = {
-            p1: { title: "Paper 1", subName: "BUSINESS LAWS & COMMUNICATION", color: "var(--p1-red)", sections: [{ name: "SECTION A: BUSINESS LAWS", chapters: [{ name: "Introduction to Law", topics: ["Sources of Law", "Legislative Process", "Court System"] }, { name: "Indian Contract Act, 1872", topics: ["Offer & Acceptance", "Consideration", "Capacity", "Consent", "Breach"] }, { name: "Sale of Goods Act, 1930", topics: ["Formation", "Ownership", "Unpaid Seller"] }, { name: "Negotiable Instruments", topics: ["Types", "Sec 138"] }]}, { name: "SECTION B: COMMUNICATION", chapters: [{ name: "Comm Skills", topics: ["Principles", "Barriers", "Correspondence"] }]}]},
-            p2: { title: "Paper 2", subName: "FINANCIAL & COST ACCOUNTING", color: "var(--p2-orange)", sections: [{ name: "SECTION A: FINANCIAL ACCOUNTS", chapters: [{ name: "Fundamentals", topics: ["GAAP", "Journal", "BRS", "Depreciation"] }, { name: "Special Transactions", topics: ["Consignment", "Joint Venture", "Bills"] }, { name: "Final Accounts", topics: ["Sole Prop", "NPO"] }]}, { name: "SECTION B: COST ACCOUNTS", chapters: [{ name: "Costing Basics", topics: ["Classification", "Cost Sheet"] }]}]},
-            p3: { title: "Paper 3", subName: "MATH & STATISTICS", color: "var(--p3-cyan)", sections: [{ name: "SECTION A: MATHEMATICS", chapters: [{ name: "Arithmetic", topics: ["Ratio", "Interest", "Progression"] }, { name: "Algebra", topics: ["Sets", "Permutations", "Quadratic"] }, { name: "Calculus", topics: ["Derivatives"] }]}, { name: "SECTION B: STATISTICS", chapters: [{ name: "Representation", topics: ["Diagrams", "Central Tendency", "Dispersion"] }, { name: "Advanced", topics: ["Correlation", "Probability", "Time Series"] }]}]},
-            p4: { title: "Paper 4", subName: "ECONOMICS & MANAGEMENT", color: "var(--p4-purple)", sections: [{ name: "SECTION A: ECONOMICS", chapters: [{ name: "Concepts", topics: ["Demand/Supply", "Production", "Cost"] }, { name: "Market/Banking", topics: ["Monopoly", "Money Functions", "PESTEL"] }]}, { name: "SECTION B: MANAGEMENT", chapters: [{ name: "Process", topics: ["Planning", "Leading", "Decision Making", "Motivation"] }]}]}
-        };
+            // --- FULL OFFICIAL SYLLABUS DATA ---
+            const SYLLABUS = {
+                p1: {
+                    title: "Paper 1",
+                    subName: "FUNDAMENTALS OF BUSINESS LAWS & COMMUNICATION",
+                    color: "var(--p1-red)",
+                    sections: [
+                        { name: "SECTION A: FUNDAMENTALS OF BUSINESS LAWS", chapters: [
+                            { name: "Module 1: Introduction", topics: [
+                                { name: "1.1 Sources of Law", sub: false }, 
+                                { name: "1.2 Legislative Process in India", sub: false }, 
+                                { name: "1.3 Legal Method and Court System in India", sub: false }, 
+                                { name: "1.4 Primary and Subordinate Legislation", sub: false }
+                            ]},
+                            { name: "Module 2: Indian Contracts Act, 1872", topics: [
+                                { name: "2.1 Essential elements of a Contract, Types of Contract, Offer and Acceptance", sub: false }, 
+                                { name: "2.2 Void and Voidable Agreements, No Consideration No Contract", sub: false }, 
+                                { name: "2.3 Consideration, Legality of Object and Consideration", sub: false }, 
+                                { name: "2.4 Capacity of Parties, Free Consent", sub: false }, 
+                                { name: "2.5 Quasi and Contingent Contracts", sub: false }, 
+                                { name: "2.6 Performance of Contracts", sub: false }, 
+                                { name: "2.7 Meaning of Indemnity, Guarantee, Pledge, Agent", sub: false }, 
+                                { name: "2.8 E-Contracts and E-Signature - Meanings and Requirements", sub: false }, 
+                                { name: "2.9 Discharge of Contracts", sub: false }, 
+                                { name: "2.10 Breach of Contract and Remedies for Breach of Contract", sub: false }
+                            ]},
+                            { name: "Module 3: Sale of Goods Act, 1930", topics: [
+                                { name: "3.1 Definition", sub: false }, 
+                                { name: "3.2 Transfer of Ownership", sub: false }, 
+                                { name: "3.3 Essential Conditions of a Contract of Sale", sub: false }, 
+                                { name: "3.4 Conditions and Warranties", sub: false }, 
+                                { name: "3.5 Performance of the Contract of Sale", sub: false }, 
+                                { name: "3.6 Rights of Unpaid Seller", sub: false }
+                            ]},
+                            { name: "Module 4: Negotiable Instruments Act, 1881", topics: [
+                                { name: "4.1 Characteristics of Negotiable Instruments", sub: false }, 
+                                { name: "4.2 Definitions of Promissory Note, Bill of Exchange and Cheque", sub: false }, 
+                                { name: "4.3 Difference between Promissory Note, Bill of Exchange and Cheque", sub: false }, 
+                                { name: "4.4 Crossing - Meaning, Definition and Types of Crossing", sub: false }, 
+                                { name: "4.5 Dishonour of Cheques (Section 138)", sub: false }
+                            ]}
+                        ]},
+                        { name: "SECTION B: BUSINESS COMMUNICATION", chapters: [
+                            { name: "Module 5: Business Communication", topics: [
+                                { name: "5.1 Introduction to Business Communication", sub: false }, 
+                                { name: "5.2 Features of Effective Business Communication", sub: false }, 
+                                { name: "5.3 Process of Communication", sub: false }, 
+                                { name: "5.4 Types of Business Communication", sub: false }, 
+                                { name: "5.5 Internet Based Business Communication", sub: false }, 
+                                { name: "5.6 Do's and Don'ts of Communication through Social Media", sub: false }, 
+                                { name: "5.7 Writing and Drafting for Business Audiences", sub: false }, 
+                                { name: "5.8 Intercultural and International Business Communication", sub: false }, 
+                                { name: "5.9 Barriers to Business Communication", sub: false }, 
+                                { name: "5.10 Legal Aspects of Business Communication", sub: false }, 
+                                { name: "5.11 Use of Graphics and References for Business Communication", sub: false }
+                            ]}
+                        ]}
+                    ]
+                },
+                p2: { 
+                    title: "Paper 2", 
+                    subName: "FUNDAMENTALS OF FINANCIAL & COST ACCOUNTING", 
+                    color: "var(--p2-orange)", 
+                    sections: [
+                        { name: "SECTION A: FUNDAMENTALS OF FINANCIAL ACCOUNTING", chapters: [
+                            { name: "Module 1: Accounting Fundamentals", topics: [
+                                { name: "1.1 Understanding of Four Frameworks of Accounting and Forms of Organisation", sub: false }, 
+                                { name: "1.2 Accounting Principles, Concepts and Conventions", sub: false }, 
+                                { name: "1.3 Capital and Revenue Transactions - Expenditures and Receipts", sub: false }, 
+                                { name: "1.4 Accounting Cycle - Charts of Accounts, Double Entry, Subsidiary Books", sub: false },
+                                { name: "1.5 Journal (Day Books; Journal Proper), Ledger", sub: false },
+                                { name: "1.6 Cash Book, Bank Book, Petty Cash Book, BRS", sub: false },
+                                { name: "1.7 Trial Balance", sub: false },
+                                { name: "1.8 Adjustment Entries and Rectification of Errors", sub: false },
+                                { name: "1.9 Depreciation (Straight Line and Diminishing Balance methods only)", sub: false },
+                                { name: "1.10 Accounting Treatment of Bad Debts and Provision for Doubtful Debts", sub: false }
+                            ]}, 
+                            { name: "Module 2: Accounting for Special Transactions", topics: [
+                                { name: "2.1 Consignment", sub: false }, 
+                                { name: "2.2 Joint Venture", sub: false }, 
+                                { name: "2.3 Bills of Exchange (excluding Accommodation Bill, Insolvency)", sub: false }
+                            ]}, 
+                            { name: "Module 3: Preparation of Final Accounts", topics: [
+                                { name: "3.1 Preparation of Financial Statements of Sole Proprietorship", sub: false }, 
+                                { name: "3.2 Preparation of Financial Statements of a Not-for-Profit Organisation", sub: false }
+                            ]}
+                        ]}, 
+                        { name: "SECTION B: FUNDAMENTALS OF COST ACCOUNTING", chapters: [
+                            { name: "Module 4: Fundamentals of Cost Accounting", topics: [
+                                { name: "4.1 Meaning, Definition, Significance of Cost Accounting, its Relationship with Financial Accounting", sub: false }, 
+                                { name: "4.2 Application of Cost Accounting for Business Decisions", sub: false },
+                                { name: "4.3 Definition of Cost, Cost Centre, Cost Unit and Cost Drivers", sub: false },
+                                { name: "4.4 Classification of Costs (with reference to Cost Accounting Standard 1)", sub: false },
+                                { name: "4.5 Ascertainment of Cost and Preparation of Statement of Cost and Profit (Cost Sheet)", sub: false }
+                            ]}
+                        ]}
+                    ] 
+                },
+                p3: { 
+                    title: "Paper 3", 
+                    subName: "FUNDAMENTALS OF BUSINESS MATHEMATICS & STATISTICS", 
+                    color: "var(--p3-cyan)", 
+                    sections: [
+                        { name: "SECTION A: FUNDAMENTALS OF BUSINESS MATHEMATICS", chapters: [
+                            { name: "Module 1: Arithmetic", topics: [
+                                { name: "1.1 Ratios, Variations and Proportions", sub: false }, 
+                                { name: "1.2 Time Value of Money and Annuity - Simple and Compound Interest", sub: false }, 
+                                { name: "1.3 Arithmetic Progression and Geometric Progression", sub: false },
+                                { name: "1.4 Time and Distance", sub: false }
+                            ]}, 
+                            { name: "Module 2: Algebra", topics: [
+                                { name: "2.1 Set Theory, Venn Diagram", sub: false }, 
+                                { name: "2.2 Indices and Logarithms (Basic Concepts)", sub: false }, 
+                                { name: "2.3 Permutation and Combinations (Basic Concepts)", sub: false },
+                                { name: "2.4 Quadratic Equation (Basic Concepts)", sub: false }
+                            ]}, 
+                            { name: "Module 3: Calculus - Application in Business", topics: [
+                                { name: "3.1 Concept of Calculus and its Application in Business", sub: false },
+                                { name: "3.2 Revenue and Cost Function", sub: false },
+                                { name: "3.3 Optimization Techniques (Basic Concepts)", sub: false }
+                            ]}
+                        ]}, 
+                        { name: "SECTION B: FUNDAMENTALS OF BUSINESS STATISTICS", chapters: [
+                            { name: "Module 4: Statistical Representation of Data", topics: [
+                                { name: "4.1 Diagrammatic Representation of Data", sub: false }, 
+                                { name: "4.2 Frequency Distribution", sub: false }, 
+                                { name: "4.3 Graphical representation of Frequency Distribution", sub: false }
+                            ]}, 
+                            { name: "Module 5: Measures of Central Tendency and Dispersion", topics: [
+                                { name: "5.1 Mean, Median, Mode, Mean Deviation", sub: false }, 
+                                { name: "5.2 Range, Quartiles and Quartile Deviation", sub: false }, 
+                                { name: "5.3 Standard Deviation", sub: false },
+                                { name: "5.4 Co-efficient of Variation", sub: false },
+                                { name: "5.5 Karl Pearson and Bowley's Co-efficient of Skewness", sub: false }
+                            ]},
+                            { name: "Module 6: Correlation and Regression", topics: [
+                                { name: "6.1 Scatter Diagram", sub: false },
+                                { name: "6.2 Karl Pearson's Co-efficient of Correlation", sub: false },
+                                { name: "6.3 Regression Analysis", sub: false }
+                            ]},
+                            { name: "Module 7: Probability", topics: [
+                                { name: "7.1 Concepts and Terminologies", sub: false },
+                                { name: "7.2 Primary applications of Probability Theorems", sub: false }
+                            ]},
+                            { name: "Module 8: Index Numbers and Time Series", topics: [
+                                { name: "8.1 Uses of Index Numbers, Methods of Construction of Index Number", sub: false },
+                                { name: "8.2 Components of Time Series and Calculation of Trend by Moving Average Method", sub: false }
+                            ]}
+                        ]}
+                    ] 
+                },
+                p4: { 
+                    title: "Paper 4", 
+                    subName: "FUNDAMENTALS OF BUSINESS ECONOMICS & MANAGEMENT", 
+                    color: "var(--p4-purple)", 
+                    sections: [
+                        { name: "SECTION A: FUNDAMENTALS OF BUSINESS ECONOMICS", chapters: [
+                            { name: "Module 1: Basic Concepts", topics: [
+                                { name: "1.1 The Fundamentals of Economics", sub: false }, 
+                                { name: "1.2 Utility, Wealth, Production", sub: false }, 
+                                { name: "1.3 Theory of Demand... and Supply... Equilibrium", sub: false },
+                                { name: "1.4 Theory of Production...", sub: false },
+                                { name: "1.5 Cost of Production...", sub: false },
+                                { name: "1.6 Means of Production", sub: false }
+                            ]}, 
+                            { name: "Module 2: Forms of Market", topics: [
+                                { name: "2.1 Pricing of Products and Services in various Forms of Markets", sub: false }, 
+                                { name: "2.2 Price Discrimination", sub: false }
+                            ]},
+                            { name: "Module 3: Money and Banking", topics: [
+                                { name: "3.1 Money - Types, Features and Functions", sub: false }, 
+                                { name: "3.2 Banking - Definition, Functions, Utility, Principles", sub: false },
+                                { name: "3.3 Commercial Banks, Central Bank", sub: false },
+                                { name: "3.4 Measures of Credit Control and Money Market", sub: false }
+                            ]},
+                            { name: "Module 4: Economic and Business Environment", topics: [
+                                { name: "4.1 PESTEL Analyses", sub: false }, 
+                                { name: "4.2 Emerging Dimensions of VUCAFU", sub: false }
+                            ]}
+                        ]}, 
+                        { name: "SECTION B: FUNDAMENTALS OF MANAGEMENT", chapters: [
+                            { name: "Module 5: Fundamentals of Management", topics: [
+                                { name: "5.1 Introduction to Management", sub: false }, 
+                                { name: "5.2 Stewardship Theory and Agency Theory of Management", sub: false }, 
+                                { name: "5.3 Planning, Organizing, Staffing and Leading", sub: false }, 
+                                { name: "5.4 Communication, Coordination, Collaboration, Monitoring and Control", sub: false },
+                                { name: "5.5 Organisation Structure, Responsibility, Accountability and Delegation of Authority", sub: false },
+                                { name: "5.6 Leadership and Motivation - Concepts and Theories", sub: false },
+                                { name: "5.7 Decision-making - Types and Process", sub: false }
+                            ]}
+                        ]}
+                    ] 
+                }
+            };
 
-        let activeAgent = "", db = { "Tanay Singh": {}, "Prem Murmu": {}, "Yash Raj": {} }, countdownTimer;
+            let activeAgent = "", db = { "Tanay Singh": {}, "Prem Murmu": {}, "Yash Raj": {} }, countdownTimer;
+            let pendingImages = [];
 
-        function showLoading() { document.getElementById('loading-overlay').style.display = 'flex'; }
-        function hideLoading() { document.getElementById('loading-overlay').style.display = 'none'; }
+            function showLoading() { document.getElementById('loading-overlay').style.display = 'flex'; }
+            function hideLoading() { document.getElementById('loading-overlay').style.display = 'none'; }
 
-        async function verify() {
-            const val = document.getElementById('passCode').value;
-            if (AGENTS[val]) { activeAgent = AGENTS[val]; await fetchCloudData(); document.getElementById('login-screen').style.display = 'none'; document.getElementById('main-terminal').style.display = 'grid'; document.getElementById('agent-name').innerText = activeAgent; showView('home', document.querySelector('.nav-link')); }
-        }
-
-        async function fetchCloudData() {
-            try { const res = await fetch(API_URL); const data = await res.json(); data.forEach(row => { if (row.progress_data) db[row.agent_name] = JSON.parse(row.progress_data); }); } catch (e) {}
-        }
-
-        async function toggleTopic(key, paperKey, chName) {
-            db[activeAgent][key] = !db[activeAgent][key];
-            document.getElementById('overall-prog').innerText = "MISSION: " + getOverall(activeAgent) + "%";
-            await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
-            showView(paperKey);
-        }
-
-        async function unlockChapter(pk, chName) {
-            if(confirm(`MANUALLY UNLOCK ${chName}? ALL DRIVE FILES WILL BE DELETED.`)) {
-                showLoading();
-                await fetch(DRIVE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ agent: activeAgent, paper: SYLLABUS[pk].title, chapter: chName, action: "DELETE" }) });
-                delete db[activeAgent][pk + chName + "_archived"];
-                await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
-                showView(pk);
-                setTimeout(hideLoading, 500);
+            async function verify() {
+                const val = document.getElementById('passCode').value;
+                if (AGENTS[val]) {
+                    activeAgent = AGENTS[val];
+                    await fetchCloudData();
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('main-terminal').style.display = 'grid';
+                    document.getElementById('agent-name').innerText = activeAgent;
+                    showView('home', document.querySelector('.nav-link'));
+                }
             }
-        }
 
-        async function archiveChapter(pk, chName) {
-            const input = document.createElement('input'); input.type = 'file'; input.multiple = true; input.accept = 'image/*';
-            input.onchange = async (e) => {
+            async function fetchCloudData() {
+                try {
+                    const res = await fetch(API_URL);
+                    const data = await res.json();
+                    data.forEach(row => { 
+                        if (row.progress_data) {
+                            db[row.agent_name] = JSON.parse(row.progress_data);
+                            
+                            // ---- 12 APRIL ATTENDANCE INJECTION LOGIC ----
+                            if (!db[row.agent_name].logs) {
+                                db[row.agent_name].logs = [];
+                            }
+                            if (!db[row.agent_name].logs.includes("12/04/2026")) {
+                                db[row.agent_name].logs.push("12/04/2026");
+                            }
+                            // ---------------------------------------------
+                        } 
+                    });
+                } catch (e) {}
+            }
+
+            async function toggleTopic(key, paperKey) {
+                db[activeAgent][key] = !db[activeAgent][key];
+                document.getElementById('overall-prog').innerText = "MISSION: " + getOverall(activeAgent) + "%";
+                await fetch(`${API_URL}/agent_name/${activeAgent}`, {
+                    method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) })
+                });
+            }
+
+            function openModal() {
+                document.getElementById('upload-modal').style.display = 'flex';
+                document.getElementById('post-date').valueAsDate = new Date();
+            }
+
+            function closeModal() {
+                document.getElementById('upload-modal').style.display = 'none';
+                document.getElementById('post-files').value = '';
+                document.getElementById('post-title').value = '';
+                document.getElementById('post-desc').value = '';
+                pendingImages = [];
+            }
+
+            async function prepImageForDrive(file) {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            const MAX_WIDTH = 800; 
+                            let scale = 1;
+                            if (img.width > MAX_WIDTH) scale = MAX_WIDTH / img.width;
+                            canvas.width = img.width * scale;
+                            canvas.height = img.height * scale;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                            resolve({
+                                data: dataUrl.split(',')[1],
+                                type: 'image/jpeg'
+                            }); 
+                        };
+                        img.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            document.getElementById('post-files').addEventListener('change', async (e) => {
                 showLoading();
                 const files = Array.from(e.target.files);
-                const fileData = await Promise.all(files.map(file => new Promise(res => { const r = new FileReader(); r.onload = ev => res({ data: ev.target.result.split(',')[1], type: file.type }); r.readAsDataURL(file); })));
-                await fetch(DRIVE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ agent: activeAgent, paper: SYLLABUS[pk].title, chapter: chName, files: fileData, action: "UPLOAD" }) });
-                db[activeAgent][pk + chName + "_archived"] = true;
-                await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
-                showView(pk);
+                pendingImages = await Promise.all(files.map(file => prepImageForDrive(file)));
                 hideLoading();
-            };
-            input.click();
-        }
+            });
 
-        async function markAttendance() {
-            const studyDay = getStudyDay();
-            if(db[activeAgent].logs?.includes(studyDay)) return alert("ALREADY LOGGED.");
-            if(!db[activeAgent].logs) db[activeAgent].logs = [];
-            db[activeAgent].logs.push(studyDay);
-            await fetch(`${API_URL}/agent_name/${activeAgent}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) }) });
-            showView('attendance');
-        }
-
-        function getStudyDay() { const now = new Date(); if (now.getHours() < 4) now.setDate(now.getDate() - 1); return now.toLocaleDateString('en-GB'); }
-        function updateCountdown() {
-            const el = document.getElementById('reset-timer'); if (!el) return;
-            const now = new Date(); const launchDate = new Date(2026, 3, 1, 4, 0, 0); 
-            if (now < launchDate) {
-                const diff = launchDate - now, d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
-                el.innerText = `OPENING IN: ${d}D ${h}H ${m}M ${s}S`; return;
+            async function publishPost() {
+                const date = document.getElementById('post-date').value;
+                const title = document.getElementById('post-title').value;
+                const desc = document.getElementById('post-desc').value;
+                
+                if(!date || !title) return alert("DATE AND TITLE REQUIRED.");
+                showLoading();
+                
+                let imageUrls = [];
+                
+                if(pendingImages.length > 0) {
+                    try {
+                        const response = await fetch(DRIVE_SCRIPT_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                agent: activeAgent,
+                                action: "FEED_UPLOAD",
+                                title: title,
+                                files: pendingImages
+                            })
+                        });
+                        const resData = await response.json();
+                        if (resData.urls) {
+                            imageUrls = resData.urls;
+                        }
+                    } catch (e) {
+                        alert("FAILED TO UPLOAD TO GDRIVE.");
+                        console.error(e);
+                        hideLoading();
+                        return;
+                    }
+                }
+                
+                if (!db[activeAgent].posts) db[activeAgent].posts = [];
+                
+                db[activeAgent].posts.push({ date, title, desc, images: imageUrls });
+                
+                await fetch(`${API_URL}/agent_name/${activeAgent}`, {
+                    method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) })
+                });
+                
+                closeModal();
+                showView('showcase', document.querySelector('.showcase-tab'));
+                hideLoading();
             }
-            let target = new Date(); target.setHours(4, 0, 0, 0); if (now.getHours() >= 4) target.setDate(target.getDate() + 1);
-            const diff = target - now, h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
-            el.innerText = `RESET IN: ${h}H ${m}M ${s}S`;
-        }
 
-        function getChProgress(name, pk, chName) {
-            let t = 0, d = 0; SYLLABUS[pk].sections.forEach(s => s.chapters.filter(c => c.name === chName).forEach(c => c.topics.forEach(tp => { t++; if (db[name][pk+c.name+tp]) d++; })));
-            return Math.round((d/t)*100) || 0;
-        }
-        function getProgress(name, pk) {
-            let t = 0, d = 0; SYLLABUS[pk].sections.forEach(s => s.chapters.forEach(c => c.topics.forEach(tp => { t++; if (db[name][pk+c.name+tp]) d++; })));
-            return (d/t)*100 || 0;
-        }
-        function getOverall(n) { return Math.round((['p1','p2','p3','p4'].reduce((a,p) => a + getProgress(n,p), 0))/4); }
+            async function markAttendance() {
+                const studyDay = getStudyDay();
+                if (db[activeAgent].logs?.includes(studyDay)) return alert("ALREADY LOGGED.");
+                if (!db[activeAgent].logs) db[activeAgent].logs = [];
+                db[activeAgent].logs.push(studyDay);
+                await fetch(`${API_URL}/agent_name/${activeAgent}`, {
+                    method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ "progress_data": JSON.stringify(db[activeAgent]) })
+                });
+                showView('attendance');
+            }
 
-        function showView(vid, el) {
-            clearInterval(countdownTimer);
-            const vp = document.getElementById('viewport'); vp.innerHTML = "";
-            if (el) { document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-            
-            if (vid === 'home') {
-                vp.innerHTML = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">SQUAD ANALYTICS</h2>`;
-                let chartHTML = `<div class="chart-container"><div class="y-axis"><span>100%</span><span>50%</span><span>0%</span></div>`;
-                Object.values(AGENTS).forEach(name => {
-                    const ov = getOverall(name);
-                    chartHTML += `<div class="bar-wrapper"><span class="bar-val">${ov}%</span><div class="bar-pillar" style="height:${ov * 1.5}px"></div><span class="bar-label">${name.split(' ')[0]}</span></div>`;
-                });
-                chartHTML += `</div><div class="pie-scroll-container">`;
-                Object.values(AGENTS).forEach(name => {
-                    const ov = getOverall(name), p1 = getProgress(name,'p1'), p2 = getProgress(name,'p2'), p3 = getProgress(name,'p3'), p4 = getProgress(name,'p4');
-                    chartHTML += `<div class="pie-card"><div class="multi-pie" style="background: conic-gradient(var(--p1-red) 0% ${p1*0.25}%, #222 ${p1*0.25}% 25%, var(--p2-orange) 25% ${25+p2*0.25}%, #222 ${25+p2*0.25}% 50%, var(--p3-cyan) 50% ${50+p3*0.25}%, #222 ${50+p3*0.25}% 75%, var(--p4-purple) 75% ${75+p4*0.25}%, #222 ${75+p4*0.25}% 100%)"><div class="pie-val">${ov}%</div></div><div class="pie-label">${name.split(' ')[0]}</div></div>`;
-                });
-                vp.innerHTML += chartHTML + `</div>`;
-                Object.values(AGENTS).forEach(name => {
-                    const ov = getOverall(name), safeId = name.replace(/\s/g, ''); let seqHTML = "";
-                    Object.keys(SYLLABUS).forEach(pk => { SYLLABUS[pk].sections.forEach(s => s.chapters.forEach(ch => {
-                        const chP = getChProgress(name, pk, ch.name);
-                        seqHTML += `<div class="comp-item" style="border-left-color:${SYLLABUS[pk].color}"><div class="comp-label">${SYLLABUS[pk].title}</div><div style="display:flex; justify-content:space-between; font-size:0.75rem"><span>${ch.name}</span><span>${chP}%</span></div><div class="comp-bar-bg"><div style="height:100%; width:${chP}%; background:${SYLLABUS[pk].color}"></div></div></div>`;
-                    }));});
-                    vp.innerHTML += `<div class="rank-card" onclick="const d=document.getElementById('det-${safeId}'); d.style.display=(d.style.display==='flex'?'none':'flex')"><div style="display:flex; justify-content:space-between; font-family:'Orbitron'; font-size:0.8rem"><span>${name}</span><span style="color:var(--ch-green)">${ov}%</span></div><div class="detail-view" id="det-${safeId}">${seqHTML}</div></div>`;
-                });
-            } else if (vid === 'attendance') {
-                const now = new Date(), launchDate = new Date(2026, 3, 1, 4, 0, 0), isLocked = now < launchDate, studyDay = getStudyDay();
-                vp.innerHTML = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">SQUAD ACTIVITY LOG</h2>`;
-                if (isLocked) vp.innerHTML += `<div class="lock-container"><h3 style="color:var(--p1-red); font-family:'Orbitron';">VACATION TIME</h3><p id="reset-timer" style="font-size: 0.8rem; color:white;">---</p></div>`;
-                else vp.innerHTML += `<div style="background:var(--card-bg); border:1px solid #333; padding:20px; border-radius:15px; margin-bottom:20px; text-align:center;"><p id="reset-timer" style="font-size: 0.75rem; color:var(--p2-orange); font-family:'Orbitron';">---</p><button onclick="markAttendance()" style="width:100%; padding:15px; background:var(--p3-cyan); border:none; border-radius:8px; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">INITIALIZE DAILY SESSION</button></div>`;
-                updateCountdown(); countdownTimer = setInterval(updateCountdown, 1000);
-                Object.values(AGENTS).forEach(name => {
-                    const logs = db[name].logs || [], act = logs.includes(studyDay);
-                    vp.innerHTML += `<div class="node-card" style="border-left: 4px solid ${act?'var(--ch-green)':'#444'}"><span class="node-status" style="background:${act?'rgba(57,255,20,0.1)':'#111'}; color:${act?'var(--ch-green)':'#444'}">${act?'ONLINE':'OFFLINE'}</span><div style="font-family:'Orbitron'; font-size:0.9rem;">${name}</div><div style="font-size:0.75rem; color:#888;">STREAK: ${logs.length} DAYS</div></div>`;
-                });
-            } else {
-                const data = SYLLABUS[vid]; 
-                vp.innerHTML = `<h1 style="color:${data.color}; font-family:'Orbitron'; font-size:1.4rem; margin:0">${data.title}</h1><p style="color:#666; font-family:'Orbitron'; font-size:0.75rem;">${data.subName}</p>`;
-                data.sections.forEach(sec => {
-                    vp.innerHTML += `<div style="background:var(--section-yellow); color:#000; padding:8px 12px; margin:15px 0; font-family:'Orbitron'; border-radius:4px; font-size:0.75rem; font-weight:bold">${sec.name}</div>`;
-                    sec.chapters.forEach(ch => {
-                        const isDone = getChProgress(activeAgent, vid, ch.name) === 100, isLocked = db[activeAgent][vid + ch.name + "_archived"];
-                        let h = `<div class="ch-card"><div class="ch-head"><span>${ch.name}</span>`;
-                        if (isLocked) h += `<div class="lock-btn-fixed" onclick="unlockChapter('${vid}','${ch.name}')">LOCKED 🔒</div>`;
-                        else if (isDone) h += `<button class="upload-btn" onclick="archiveChapter('${vid}','${ch.name}')">ARCHIVE NOTES</button>`;
-                        h += `</div><div class="topic-body">`;
-                        ch.topics.forEach(t => { const k = vid+ch.name+t, c = db[activeAgent][k]?'checked':''; h += `<div class="topic-row"><input type="checkbox" onchange="toggleTopic('${k}', '${vid}', '${ch.name}')" ${c} ${isLocked?'disabled':''} style="accent-color:${data.color}"><span>${t}</span></div>`; });
-                        vp.innerHTML += h + `</div></div>`;
+            function getStudyDay() {
+                const now = new Date(); if (now.getHours() < 4) now.setDate(now.getDate() - 1);
+                return now.toLocaleDateString('en-GB');
+            }
+
+            function updateCountdown() {
+                const el = document.getElementById('reset-timer'); if (!el) return;
+                const now = new Date(), launchDate = new Date(2026,3,13,4,0,0);
+                if (now < launchDate) {
+                    const diff = launchDate - now, d = Math.floor(diff / 86400000), h = Math.floor((diff % 86400000) / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+                    el.innerText = `OPENING IN: ${d}D ${h}H ${m}M ${s}S`; return;
+                }
+                let target = new Date(); target.setHours(4, 0, 0, 0); if (now.getHours() >= 4) target.setDate(target.getDate() + 1);
+                const diff = target - now, h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
+                el.innerText = `RESET IN: ${h}H ${m}M ${s}S`;
+            }
+
+            function getChProgress(name, pk, chName) {
+                let t = 0, d = 0;
+                SYLLABUS[pk].sections.forEach(s => s.chapters.filter(c => c.name === chName).forEach(c => c.topics.forEach(tp => {
+                    t++; if (db[name][pk + c.name + tp.name]) d++;
+                })));
+                return Math.round((d / t) * 100) || 0;
+            }
+
+            function getProgress(name, pk) {
+                let t = 0, d = 0;
+                SYLLABUS[pk].sections.forEach(s => s.chapters.forEach(c => c.topics.forEach(tp => {
+                    t++; if (db[name][pk + c.name + tp.name]) d++;
+                })));
+                return (d / t) * 100 || 0;
+            }
+
+            function getOverall(n) { return Math.round((['p1', 'p2', 'p3', 'p4'].reduce( (a, p) => a + getProgress(n, p), 0)) / 4); }
+
+            function showView(vid, el) {
+                clearInterval(countdownTimer);
+                const vp = document.getElementById('viewport'); vp.innerHTML = "";
+                if (el) { document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+
+                if (vid === 'home') {
+                    vp.innerHTML = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">SQUAD ANALYTICS</h2>`;
+                    let chartHTML = `<div class="chart-container"><div class="y-axis"><span>100%</span><span>50%</span><span>0%</span></div>`;
+                    Object.values(AGENTS).forEach(name => {
+                        const ov = getOverall(name);
+                        chartHTML += `<div class="bar-wrapper"><span class="bar-val">${ov}%</span><div class="bar-pillar" style="height:${ov * 1.5}px"></div><span class="bar-label">${name.split(' ')[0]}</span></div>`;
                     });
-                });
+                    chartHTML += `</div><div class="pie-scroll-container">`;
+                    Object.values(AGENTS).forEach(name => {
+                        const ov = getOverall(name), p1 = getProgress(name, 'p1'), p2 = getProgress(name, 'p2'), p3 = getProgress(name, 'p3'), p4 = getProgress(name, 'p4');
+                        chartHTML += `<div class="pie-card"><div class="multi-pie" style="background: conic-gradient(var(--p1-red) 0% ${p1 * 0.25}%, #222 ${p1 * 0.25}% 25%, var(--p2-orange) 25% ${25 + p2 * 0.25}%, #222 ${25 + p2 * 0.25}% 50%, var(--p3-cyan) 50% ${50 + p3 * 0.25}%, #222 ${50 + p3 * 0.25}% 75%, var(--p4-purple) 75% ${75 + p4 * 0.25}%, #222 ${75 + p4 * 0.25}% 100%)"><div class="pie-val">${ov}%</div></div><div class="pie-label">${name.split(' ')[0]}</div></div>`;
+                    });
+                    vp.innerHTML += chartHTML + `</div>`;
+                    Object.values(AGENTS).forEach(name => {
+                        const ov = getOverall(name), safeId = name.replace(/\s/g, '');
+                        let seqHTML = "";
+                        Object.keys(SYLLABUS).forEach(pk => {
+                            SYLLABUS[pk].sections.forEach(s => s.chapters.forEach(ch => {
+                                const chP = getChProgress(name, pk, ch.name);
+                                seqHTML += `<div class="comp-item" style="border-left-color:${SYLLABUS[pk].color}"><div class="comp-label">${SYLLABUS[pk].title}</div><div style="display:flex; justify-content:space-between; font-size:0.75rem"><span>${ch.name}</span><span>${chP}%</span></div><div class="comp-bar-bg"><div style="height:100%; width:${chP}%; background:${SYLLABUS[pk].color}"></div></div></div>`;
+                            }));
+                        });
+                        vp.innerHTML += `<div class="rank-card" onclick="const d=document.getElementById('det-${safeId}'); d.style.display=(d.style.display==='flex'?'none':'flex')"><div style="display:flex; justify-content:space-between; font-family:'Orbitron'; font-size:0.8rem"><span>${name}</span><span style="color:var(--ch-green)">${ov}%</span></div><div class="detail-view" id="det-${safeId}">${seqHTML}</div></div>`;
+                    });
+                } else if (vid === 'showcase') {
+                    vp.innerHTML = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">GLOBAL NOTES SHOWCASE</h2>
+                    <div class="showcase-grid" id="showcase-container"></div>`;
+                    
+                    const container = document.getElementById('showcase-container');
+                    Object.values(AGENTS).forEach(agentName => {
+                        let safeId = agentName.replace(/\s/g, '');
+                        let colHTML = `<div class="agent-col"><h3>${agentName.split(' ')[0]}</h3>`;
+                            
+                        if(agentName === activeAgent) {
+                            colHTML += `<button class="upload-btn-main" onclick="openModal()">+ UPLOAD NOTES</button>`;
+                        }
+                        
+                        const posts = db[agentName].posts || [];
+                        [...posts].reverse().forEach((p, idx) => {
+                            let postId = `post-${safeId}-${idx}`;
+                            
+                            colHTML += `<div class="date-card" onclick="const el=document.getElementById('${postId}'); el.style.display=(el.style.display==='block'?'none':'block')">
+                                📅 ${p.date}
+                            </div>`;
+                            
+                            colHTML += `<div class="post-card" id="${postId}" style="display:none;">
+                                <div class="post-title">${p.title}</div>
+                                <div class="post-desc">${p.desc}</div>`;
+                                
+                            if(p.images && p.images.length > 0) {
+                                colHTML += `<div class="post-img-container">`;
+                                p.images.forEach(img => { 
+                                    colHTML += `<img src="${img}" class="post-img" onclick="window.open('${img}', '_blank')">`; 
+                                });
+                                colHTML += `</div>`;
+                            }
+                            colHTML += `</div>`;
+                        });
+                        
+                        colHTML += `</div>`;
+                        container.innerHTML += colHTML;
+                    });
+                } else if (vid === 'attendance') {
+                    const now = new Date(), launchDate = new Date(2026,3,13,4,0,0), isLocked = now < launchDate, studyDay = getStudyDay();
+                    vp.innerHTML = `<h2 style="color:var(--p3-cyan); font-family:'Orbitron'; font-size:1.1rem; margin-bottom:20px">SQUAD ACTIVITY LOG</h2>`;
+                    if (isLocked) vp.innerHTML += `<div class="lock-container"><h3 style="color:var(--p1-red); font-family:'Orbitron';">VACATION TIME</h3><p id="reset-timer" style="font-size: 0.8rem; color:white;">---</p></div>`;
+                    else vp.innerHTML += `<div style="background:var(--card-bg); border:1px solid #333; padding:20px; border-radius:15px; margin-bottom:20px; text-align:center;"><p id="reset-timer" style="font-size: 0.75rem; color:var(--p2-orange); font-family:'Orbitron';">---</p><button onclick="markAttendance()" style="width:100%; padding:15px; background:var(--p3-cyan); border:none; border-radius:8px; font-family:'Orbitron'; font-weight:bold; cursor:pointer;">INITIALIZE DAILY SESSION</button></div>`;
+                    updateCountdown(); countdownTimer = setInterval(updateCountdown, 1000);
+                    Object.values(AGENTS).forEach(name => {
+                        const logs = db[name].logs || [], act = logs.includes(studyDay);
+                        vp.innerHTML += `<div class="node-card" style="border-left: 4px solid ${act ? 'var(--ch-green)' : '#444'}"><span class="node-status" style="background:${act ? 'rgba(57,255,20,0.1)' : '#111'}; color:${act ? 'var(--ch-green)' : '#444'}">${act ? 'ONLINE' : 'OFFLINE'}</span><div style="font-family:'Orbitron'; font-size:0.9rem;">${name}</div><div style="font-size:0.75rem; color:#888;">STREAK: ${logs.length} DAYS</div></div>`;
+                    });
+                } else {
+                    const data = SYLLABUS[vid];
+                    vp.innerHTML = `<h1 style="color:${data.color}; font-family:'Orbitron'; font-size:1.4rem; margin:0">${data.title}</h1><p style="color:#666; font-family:'Orbitron'; font-size:0.75rem;">${data.subName}</p>`;
+                    data.sections.forEach(sec => {
+                        vp.innerHTML += `<div style="background:var(--section-yellow); color:#000; padding:8px 12px; margin:15px 0; font-family:'Orbitron'; border-radius:4px; font-size:0.75rem; font-weight:bold">${sec.name}</div>`;
+                        sec.chapters.forEach(ch => {
+                            let h = `<div class="ch-card"><div class="ch-head"><span>${ch.name}</span></div><div class="topic-body">`;
+                            ch.topics.forEach(t => {
+                                const k = vid + ch.name + t.name, c = db[activeAgent][k] ? 'checked' : '';
+                                h += `<div class="topic-row ${t.sub ? 'is-subtopic' : ''}"><input type="checkbox" onchange="toggleTopic('${k}', '${vid}')" ${c} style="accent-color:${data.color}"><span>${t.name}</span></div>`;
+                            });
+                            vp.innerHTML += h + `</div></div>`;
+                        });
+                    });
+                }
             }
-        }
-    </script>
-</body>
+        </script>
+    </body>
 </html>
